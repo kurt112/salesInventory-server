@@ -1,6 +1,21 @@
 module.exports = (sequelize, DataTypes) => {
     const Product = sequelize.define("Product", {
+        brand: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                notEmpty: true
+            }
+        },
         name: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                notEmpty: true
+            }
+        },
+
+        type: {
             type: DataTypes.STRING,
             allowNull: false,
             validate: {
@@ -14,15 +29,21 @@ module.exports = (sequelize, DataTypes) => {
                 notEmpty: true
             }
         },
-        type: {
+        status: {
             type: DataTypes.STRING,
             allowNull: false,
-            validate: {
-                notEmpty: true
-            }
+            defaultValue: 'Active'
+        },
+        deletedAt: {
+            type: DataTypes.DATE,
         }
     })
 
+    Product.associate = models => {
+        Product.hasMany(models.Sales, {
+            onDelete: 'cascade'
+        })
+    }
 
     return Product
 }
