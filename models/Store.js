@@ -39,14 +39,15 @@ module.exports = (sequelize, DataTypes) => {
         })
     }
 
+
     Store.associate = models => {
-        Store.hasMany(models.Product, {
+        Store.hasMany(models.Transaction, {
             onDelete: 'cascade'
         })
     }
 
     Store.associate = models => {
-        Store.hasMany(models.Transaction, {
+        Store.hasMany(models.Product, {
             onDelete: 'cascade'
         })
     }
