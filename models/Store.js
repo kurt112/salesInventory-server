@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
             }
         },
         email: {
-            type:DataTypes.STRING,
+            type: DataTypes.STRING,
         },
         address: {
             type: DataTypes.STRING
@@ -34,24 +34,20 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     Store.associate = models => {
+
+        Store.hasMany(models.Transaction, {
+            onDelete: 'cascade'
+        })
+
+        Store.hasMany(models.Product, {
+            onDelete: 'cascade'
+        })
+
+
         Store.hasMany(models.User, {
             onDelete: 'cascade'
         })
     }
-
-
-    Store.associate = models => {
-        Store.hasMany(models.Transaction, {
-            onDelete: 'cascade'
-        })
-    }
-
-    Store.associate = models => {
-        Store.hasMany(models.Product, {
-            onDelete: 'cascade'
-        })
-    }
-
 
 
     return Store

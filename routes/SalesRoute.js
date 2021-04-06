@@ -3,15 +3,15 @@ let router = express.Router()
 const {Sales} = require('../models')
 
 router.get('/insert', async (req, res) => {
+
     const sales = await Sales.create({
+        id: 1,
         qty: 10,
         total: 20,
-        ProductId:1,
-        TransactionId:1
+        ProductId: 1,
+        TransactionId: 1
     }).catch(err => {
-        if (err) {
-            console.log(err);
-        }
+        res.send(err)
     })
 
     res.send(sales)

@@ -19,7 +19,7 @@ router.get('/insert', async (req, res) => {
     res.send(user)
 })
 
-router.get('/select', (req, res) => {
+router.get('/get', (req, res) => {
     User.findAll({
         // where: {firstName: "John"}
     }).then((user) => {

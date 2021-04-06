@@ -1,6 +1,16 @@
 const express = require("express")
 const app = express()
 const db = require('./models')
+const cors = require('cors')
+
+// setting up cors
+app.use(cors(
+    {
+        methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+        origin: 'http://localhost:3000',
+    }
+))
+
 
 // Routes For Server
 const ProductRoute = require("./routes/ProductRoute")
@@ -10,7 +20,6 @@ const StoreRoute = require("./routes/StoreRoute")
 const SupplierRoute = require("./routes/SupplierRoute")
 const TransactionRoute = require("./routes/TransactionRoute")
 const UserRoute = require("./routes/UserRoute")
-
 
 
 // route implementation
@@ -23,13 +32,8 @@ app.use('/sales', SalesRoute)
 app.use('/customer', CustomerRoute)
 
 
-
-
-
-
-
-
 db.sequelize.sync().then((req) => {
+
     app.listen(3001, () => {
         console.log("Server running");
     })
