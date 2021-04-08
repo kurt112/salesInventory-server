@@ -1,16 +1,9 @@
 const express = require('express')
 let router = express.Router()
-const {User} = require('../models')
+const {User, Store} = require('../models')
+router.post('/insert', async (req, res) => {
 
-router.get('/insert', async (req, res) => {
-    const user = await User.create({
-        email: "Pedre",
-        password: "password",
-        firstName: "kurt",
-        lastName: "orioque",
-        role: 1,
-        status: 2,
-    }).catch(err => {
+    const user = await User.create(req.body).catch(err => {
         if (err) {
             console.log(err);
         }
@@ -19,9 +12,12 @@ router.get('/insert', async (req, res) => {
     res.send(user)
 })
 
-router.get('/get', (req, res) => {
+router.get('/list', (req, res) => {
     User.findAll({
-        // where: {firstName: "John"}
+        include: [
+            {model: Store}
+        ]
+
     }).then((user) => {
         res.send(user)
     }).catch((error) => {
@@ -30,10 +26,18 @@ router.get('/get', (req, res) => {
 })
 
 
-router.get('/delete', (req, res) => {
-    User.destroy({where: {id: 1}})
-    res.send('delete')
+router.post('/delete', async  (req, res) => {
+
+    try{
+        await User.destroy({where: {email: req.body.email}})
+    }catch (error){
+        console.log("I have error")
+        res.status(400).send("This User Can't Delete")
+    }
+
+    res.status(200).send("Deleted User")
 })
 
 
 module.exports = router
+

@@ -20,7 +20,20 @@ module.exports = (sequelize, DataTypes) => {
 
     });
 
+    Sales.associate = models  => {
+        Sales.belongsTo(models.Transaction, {
+            foreignKey: {
+                allowNull: false
+            }
+        })
 
+        Sales.belongsTo(models.Product, {
+            foreignKey: {
+                allowNull: false
+            }
+        })
+
+    }
 
 
     return Sales

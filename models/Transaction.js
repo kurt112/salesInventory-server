@@ -23,9 +23,29 @@ module.exports = (sequelize, DataTypes) => {
 
 
     Transaction.associate= models => {
+
         Transaction.hasMany(models.Sales, {
             onDelete: 'cascade'
         })
+
+        Transaction.belongsTo(models.Store,{
+            foreignKey:{
+                allowNull: false
+            }
+        })
+
+        Transaction.belongsTo(models.User,{
+            foreignKey:{
+                allowNull: false
+            }
+        })
+
+        Transaction.belongsTo(models.Customer,{
+            foreignKey:{
+                allowNull: false
+            }
+        })
+
     }
 
     return Transaction

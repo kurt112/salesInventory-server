@@ -1,6 +1,6 @@
 const express = require('express')
 let router = express.Router()
-const {Sales} = require('../models')
+const {Sales, Product, Transaction} = require('../models')
 
 router.get('/insert', async (req, res) => {
 
@@ -8,8 +8,8 @@ router.get('/insert', async (req, res) => {
         id: 1,
         qty: 10,
         total: 20,
-        ProductId: 1,
-        TransactionId: 1
+        ProductId: 3,
+        TransactionId: 5
     }).catch(err => {
         res.send(err)
     })
@@ -17,9 +17,12 @@ router.get('/insert', async (req, res) => {
     res.send(sales)
 })
 
-router.get('/select', (req, res) => {
-    sales.findAll({
-        // where: {firstName: "John"}
+router.get('/list', (req, res) => {
+    Sales.findAll({
+        include: [
+            {model: Product},
+            {model: Transaction}
+        ]
     }).then((supplier) => {
         res.send(supplier)
     }).catch((error) => {

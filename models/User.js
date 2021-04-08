@@ -49,6 +49,12 @@ module.exports = (sequelize, DataTypes) => {
         User.hasMany(models.Transaction, {
             onDelete: 'cascade'
         })
+
+        User.belongsTo(models.Store,{
+            foreignKey:{
+                allowNull: false
+            }
+        })
     }
 
 

@@ -1,6 +1,6 @@
 const express = require('express')
 let router = express.Router()
-const {Transaction} = require('../models')
+const {Transaction,Customer,Store,User} = require('../models')
 
 router.get('/insert', async (req, res) => {
     const transaction = await Transaction.create({
@@ -8,6 +8,7 @@ router.get('/insert', async (req, res) => {
         discount: 0.0,
         CustomerId:1,
         UserId: 1,
+        StoreId: 1
     }).catch(err => {
         if (err) {
             console.log(err);
@@ -17,8 +18,13 @@ router.get('/insert', async (req, res) => {
     res.send(transaction)
 })
 
-router.get('/select', (req, res) => {
+router.get('/list', (req, res) => {
     Transaction.findAll({
+        include: [
+            {model: Store},
+            {model: Customer},
+            {model: User}
+        ]
         // where: {firstName: "John"}
     }).then((supplier) => {
         res.send(supplier)

@@ -7,6 +7,13 @@ module.exports = (sequelize, DataTypes) => {
                 notEmpty: true
             }
         },
+        code:{
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            validate: {
+                notEmpty: true
+            }
+        },
         name: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -42,6 +49,18 @@ module.exports = (sequelize, DataTypes) => {
     Product.associate = models => {
         Product.hasMany(models.Sales, {
             onDelete: 'cascade'
+        })
+
+        Product.belongsTo(models.Supplier,{
+            foreignKey:{
+                allowNull: false
+            }
+        })
+
+        Product.belongsTo(models.Store,{
+            foreignKey:{
+                allowNull: false
+            }
         })
     }
 

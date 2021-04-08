@@ -1,7 +1,6 @@
 const express = require('express')
 let router = express.Router()
 const {Customer} = require('../models')
-
 router.get('/insert', async (req, res) => {
     const supplier = await Customer.create({
         name: "Pedre",
@@ -9,7 +8,7 @@ router.get('/insert', async (req, res) => {
         address: "kurt",
         city: "orioque",
         state: "San Mateo",
-        postal_code: 2,
+        postalCode: 2,
         mobile_no:'0961714338',
         tel_no:2
     }).catch(err => {
@@ -21,7 +20,7 @@ router.get('/insert', async (req, res) => {
     res.send(supplier)
 })
 
-router.get('/select', (req, res) => {
+router.get('/list', (req, res) => {
     Customer.findAll({
         // where: {firstName: "John"}
     }).then((supplier) => {

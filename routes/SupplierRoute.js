@@ -2,26 +2,19 @@ const express = require('express')
 let router = express.Router()
 const {Supplier} = require('../models')
 
-router.get('/insert', async (req, res) => {
-    const supplier = await Supplier.create({
-        name: "Pedre",
-        email: "password",
-        address: "kurt",
-        city: "orioque",
-        state: "San Mateo",
-        postal_code: 2,
-        mobile_no:'0961714338',
-        tel_no:2
-    }).catch(err => {
-        if (err) {
-            console.log(err);
-        }
-    })
+router.post('/insert', async (req, res) => {
+
+    const supplier = await Supplier.create(req.body)
+        .catch(err => {
+            if (err) {
+                console.log(err);
+            }
+        })
 
     res.send(supplier)
 })
 
-router.get('/select', (req, res) => {
+router.get('/list', (req, res) => {4
     Supplier.findAll({
         // where: {firstName: "John"}
     }).then((supplier) => {
@@ -29,6 +22,11 @@ router.get('/select', (req, res) => {
     }).catch((error) => {
         console.log(error);
     })
+})
+
+
+router.post('/update', (req, res) => {
+
 })
 
 

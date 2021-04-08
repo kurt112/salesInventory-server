@@ -1,7 +1,9 @@
 const express = require("express")
-const app = express()
 const db = require('./models')
 const cors = require('cors')
+const bodyParser = require('body-parser');
+const fileUpload = require('express-fileupload')
+const app = express()
 
 // setting up cors
 app.use(cors(
@@ -11,6 +13,8 @@ app.use(cors(
     }
 ))
 
+app.use(bodyParser.json());
+app.use(fileUpload());
 
 // Routes For Server
 const ProductRoute = require("./routes/ProductRoute")
@@ -31,6 +35,25 @@ app.use('/store', StoreRoute)
 app.use('/sales', SalesRoute)
 app.use('/customer', CustomerRoute)
 
+
+app.post('/upload', async (req, res) => {
+
+    if(req.files === null) {
+        return res.status(400).json({msg: 'No file Uploaded'})
+    }
+
+    const file = req.files.picture
+
+    file.mv(`${__dirname}/uploads/${file.name}`, err => {
+        if(err){
+            console.log(err)
+            return res.status(500).send(err)
+        }
+        })
+
+
+    res.send(`Hello World`)
+})
 
 db.sequelize.sync().then((req) => {
 
