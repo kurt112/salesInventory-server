@@ -1,24 +1,40 @@
 const express = require('express')
 const path = require('path')
 let router = express.Router()
+const ImageFolder = path.join(__dirname, '../uploads/image')
+const fs = require('fs');
 const {Product, Supplier, Store} = require('../models')
 
-router.get('/insert', async (req, res) => {
-    const product = await Product.create({
-        brand: "Pedre",
-        name: "password",
-        type: "kurt",
-        price: 20,
-        SupplierId: 9,
-        StoreId: 2,
-        code: 1234,
-    }).catch(err => {
-        if (err) {
-            console.log(err);
-        }
-    })
+router.post('/insert', async (req, res) => {
 
-    res.send(product)
+    let qty = req.body.qty
+
+    while (qty !== 0) {
+        await Product.create(req.body).catch(err => {
+            if (err) {
+                console.log(err);
+            }
+        })
+
+        qty--
+    }
+
+    res.send("ok")
+})
+
+router.get('/update', async (req,res) => {
+    try {
+        const result = await Product.update(
+            { brand: 'Updating bitch' },
+            { where: { code: 12345} }
+        )
+
+        console.log(result)
+    } catch (err) {
+        console.log(err)
+    }
+
+    res.send("Success")
 })
 
 router.get('/list', (req, res) => {
@@ -43,8 +59,21 @@ router.get('/delete', (req, res) => {
 
 router.get("/getImage", (req, res) => {
     const {picture} = req.query
-    const pic = path.join(__dirname, '../uploads', picture)
+    const pic = path.join(__dirname, '../uploads/image', picture)
     res.sendFile(pic);
+});
+
+
+// get all images in the folder
+router.get("/images", (req, res) => {
+    const data = []
+
+    fs.readdirSync(ImageFolder).forEach(file => {
+        data.push(file);
+    });
+
+
+    res.send(data)
 });
 
 

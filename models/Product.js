@@ -41,6 +41,11 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: 'Active'
         },
+        photo: {
+            type: DataTypes.STRING,
+            allowNull:false,
+            defaultValue: ''
+        },
         deletedAt: {
             type: DataTypes.DATE,
         }
