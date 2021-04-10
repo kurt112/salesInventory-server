@@ -22,11 +22,10 @@ router.post('/insert', async (req, res) => {
     res.send("ok")
 })
 
-router.get('/update', async (req,res) => {
+router.post('/update', async (req, res) => {
     try {
-        const result = await Product.update(
-            { brand: 'Updating bitch' },
-            { where: { code: 12345} }
+        const result = await Product.update(req.body,
+            {where: {code: req.body.code}}
         )
 
         console.log(result)
@@ -52,14 +51,52 @@ router.get('/list', (req, res) => {
 })
 
 
-router.get('/delete', (req, res) => {
-    Product.destroy({where: {id: 1}})
-    res.send()
+router.post('/delete', async (req, res) => {
+    let qty = req.body.qty
+    const code = req.body.code
+
+
+    const size = await Product.findAll({
+        where: {
+            code
+        }
+    })
+
+    if (size.length === 0) {
+        const error = {
+            name: 'Product Not Found',
+            message: 'User Barcode to find product'
+        }
+        res.status(400).send(error)
+    }
+
+    if (qty > size.length) {
+        console.log("Did i go here?")
+        const error = {
+            name: 'Quantity Error',
+            message: 'Quantity not enough'
+        }
+        res.status(400).send(error)
+    } else {
+        console.log("Why i am sending?")
+        await Product.destroy(
+            {
+                limit: qty,
+                where: {code: code}
+            }
+        ).then(e => {
+            console.log(e)
+        }).catch(error => {
+            console.log(error)
+        })
+
+        res.send("Delete Success")
+    }
 })
 
-router.get("/getImage", (req, res) => {
-    const {picture} = req.query
-    const pic = path.join(__dirname, '../uploads/image', picture)
+router.get("/getImage/:name", (req, res) => {
+    const {name} = req.params
+    const pic = path.join(__dirname, '../uploads/image', name)
     res.sendFile(pic);
 });
 
