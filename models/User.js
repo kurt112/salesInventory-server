@@ -4,7 +4,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false,
             validate: {
-                notEmpty: true
+                notEmpty: true,
+            },
+            unique: {
+                msg: 'Email address already in use!'
             }
         },
         password: {

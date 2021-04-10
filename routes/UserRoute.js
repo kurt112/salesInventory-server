@@ -3,10 +3,13 @@ let router = express.Router()
 const {User, Store} = require('../models')
 router.post('/insert', async (req, res) => {
 
-    const user = await User.create(req.body).catch(err => {
-        if (err) {
-            console.log(err);
-        }
+    await User.create(req.body).then(e => {
+        res.send(e)
+    }).catch(ignored => {
+        res.status(400).send({
+            title: 'Email Should be unique',
+            message: 'User email is existing'
+        })
     })
 
     res.send(user)
@@ -26,16 +29,30 @@ router.get('/list', (req, res) => {
 })
 
 
-router.post('/delete', async  (req, res) => {
+router.post('/delete', async (req, res) => {
 
-    try{
-        await User.destroy({where: {email: req.body.email}})
-    }catch (error){
-        console.log("I have error")
-        res.status(400).send("This User Can't Delete")
+    let error;
+    try {
+        const user = await User.destroy({
+            where: {
+                email: req.body.email
+            }
+        })
+
+        if (user === 0) throw new Error('No user Deleted')
+    } catch (e) {
+        error = e
     }
 
-    res.status(200).send("Deleted User")
+
+    if (error) {
+        res.status(400).send({
+            title: `User Delete`,
+            message: `Deleting this user can cause fatal error`
+        })
+    } else res.send("User Deleted Success")
+
+
 })
 
 

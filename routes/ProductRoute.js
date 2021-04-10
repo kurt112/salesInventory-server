@@ -63,20 +63,17 @@ router.post('/delete', async (req, res) => {
     })
 
     if (size.length === 0) {
-        const error = {
-            name: 'Product Not Found',
+        res.status(400).send({
+            title: 'Product Not Found',
             message: 'User Barcode to find product'
-        }
-        res.status(400).send(error)
+        })
     }
 
     if (qty > size.length) {
-        console.log("Did i go here?")
-        const error = {
-            name: 'Quantity Error',
+        res.status(400).send({
+            title: 'Quantity Error',
             message: 'Quantity not enough'
-        }
-        res.status(400).send(error)
+        })
     } else {
         console.log("Why i am sending?")
         await Product.destroy(
