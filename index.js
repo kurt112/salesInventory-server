@@ -38,18 +38,18 @@ app.use('/customer', CustomerRoute)
 
 app.post('/upload', async (req, res) => {
 
-    if(req.files === null) {
+    if (req.files === null) {
         return res.status(400).json({msg: 'No file Uploaded'})
     }
 
     const file = req.files.picture
 
-    file.mv(`${__dirname}/uploads/${file.name}`, err => {
-        if(err){
+    file.mv(`${__dirname}/uploads/image/${file.name}`, err => {
+        if (err) {
             console.log(err)
             return res.status(500).send(err)
         }
-        })
+    })
 
 
     res.send(`Hello World`)
