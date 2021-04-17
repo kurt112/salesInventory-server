@@ -1,6 +1,7 @@
 const express = require('express')
 let router = express.Router()
 const {User, Store} = require('../models')
+
 router.post('/insert', async (req, res) => {
 
     await User.create(req.body).then(e => {
@@ -54,6 +55,49 @@ router.post('/delete', async (req, res) => {
 
 
 })
+
+router.post('/find', async (req,res) => {
+
+    const {email} = req.body
+
+    const data = await User.findAll({
+        limit: 1,
+        where: {
+            email
+        }
+    })
+
+    if(data.length === 0){
+        res.status(400).send({
+            title: 'User Not Found',
+            message: 'Enter Proper User Email'
+        })
+    }else{
+        res.send(data)
+    }
+})
+
+
+router.post('/update', async (req, res) => {
+    try {
+        const result = await User.update(req.body,
+            {
+                where:
+                    {
+                        id: req.body.id
+                    }
+            }
+        )
+        res.send(result)
+    } catch (ignored) {
+        res.status(400).send({
+            title: `User can't find`,
+            message: `Can't update User`
+        })
+    }
+})
+
+
 
 
 module.exports = router

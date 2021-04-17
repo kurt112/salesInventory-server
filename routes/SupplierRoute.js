@@ -26,7 +26,6 @@ router.get('/list', (req, res) => {
 
 
 router.post('/update', async (req, res) => {
-    console.log(req.body.email)
     try {
         const result = await Supplier.update(req.body,
             {
