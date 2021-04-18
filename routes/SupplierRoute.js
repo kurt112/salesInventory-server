@@ -31,7 +31,7 @@ router.post('/update', async (req, res) => {
             {
                 where:
                     {
-                        email: req.body.email
+                        id: req.body.id
                     }
             }
         )
