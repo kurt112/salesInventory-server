@@ -1,6 +1,7 @@
 const express = require('express')
 let router = express.Router()
 const {Customer} = require('../models')
+
 router.get('/insert', async (req, res) => {
     const supplier = await Customer.create({
         name: "Pedre",

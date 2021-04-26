@@ -7,7 +7,7 @@ router.get('/insert', async (req, res) => {
         amount: 22.1,
         discount: 0.0,
         CustomerId:1,
-        UserId: 1,
+        UserId: 6,
         StoreId: 1
     }).catch(err => {
         if (err) {

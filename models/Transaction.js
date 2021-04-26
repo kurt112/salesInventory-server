@@ -1,6 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
     const Transaction = sequelize.define("Transaction", {
-
         amount: {
             type:DataTypes.DOUBLE,
             allowNull: false,
@@ -14,10 +13,6 @@ module.exports = (sequelize, DataTypes) => {
             validate: {
                 notEmpty: true
             }
-        },
-        deletedAt: {
-            type: DataTypes.DATE,
-
         }
     });
 

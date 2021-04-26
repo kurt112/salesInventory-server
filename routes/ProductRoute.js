@@ -24,14 +24,21 @@ router.post('/insert', async (req, res) => {
 
 router.post('/update', async (req, res) => {
 
-    const {  brand,
+    const {
+        brand,
         code,
         name,
         type,
         price,
         SupplierId,
         StoreId,
-        photo} = req.body
+        photo,
+        oldCode
+    } = req.body
+
+
+    console.log('The old code ')
+    console.log(oldCode)
 
     const data = {
         brand,
@@ -45,8 +52,8 @@ router.post('/update', async (req, res) => {
     }
 
     try {
-        const result = await Product.update(data,
-            {where: {code}}
+        await Product.update(data,
+            {where: {code: oldCode}}
         )
 
     } catch (err) {
@@ -57,14 +64,17 @@ router.post('/update', async (req, res) => {
 })
 
 router.get('/list', (req, res) => {
+
+    const branch = parseInt(req.query.branch)
+
     Product.findAll({
         include: [
             {model: Supplier},
             {model: Store},
-        ]
-        // where: {firstName: "John"}
-    }).then((supplier) => {
-        res.send(supplier)
+        ],
+        where: branch === 0 ? null : {StoreID: req.query.branch}
+    }).then((product) => {
+        res.send(product)
     }).catch((error) => {
         console.log(error);
     })
@@ -161,7 +171,7 @@ router.post("/transfer", async (req, res) => {
     }
 })
 
-router.post('/find', async (req,res) => {
+router.post('/find', async (req, res) => {
 
     const {code} = req.body
 
@@ -172,12 +182,12 @@ router.post('/find', async (req,res) => {
         }
     })
 
-    if(data.length === 0){
+    if (data.length === 0) {
         res.status(400).send({
             title: 'Product Not Found',
             message: 'User Barcode to find product'
         })
-    }else{
+    } else {
         res.send(data)
     }
 })

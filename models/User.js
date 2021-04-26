@@ -53,11 +53,17 @@ module.exports = (sequelize, DataTypes) => {
             onDelete: 'cascade'
         })
 
+
         User.belongsTo(models.Store,{
             foreignKey:{
                 allowNull: false
             }
         })
+
+        User.hasMany(models.AuditTrail, {
+            onDelete: 'cascade'
+        })
+
     }
 
 

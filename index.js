@@ -24,6 +24,8 @@ const StoreRoute = require("./routes/StoreRoute")
 const SupplierRoute = require("./routes/SupplierRoute")
 const TransactionRoute = require("./routes/TransactionRoute")
 const UserRoute = require("./routes/UserRoute")
+const AuditTrailRoute = require('./routes/AuditTrail')
+const DashBoardRoute = require('./routes/DashBoardRoute')
 
 
 // route implementation
@@ -34,7 +36,8 @@ app.use('/supplier', SupplierRoute)
 app.use('/store', StoreRoute)
 app.use('/sales', SalesRoute)
 app.use('/customer', CustomerRoute)
-
+app.use('/audit', AuditTrailRoute)
+app.use('/dashboard', DashBoardRoute)
 
 app.post('/upload', async (req, res) => {
 
@@ -55,8 +58,7 @@ app.post('/upload', async (req, res) => {
     res.send(`Hello World`)
 })
 
-db.sequelize.sync().then((req) => {
-
+db.sequelize.sync().then(() => {
     app.listen(3001, () => {
         console.log("Server running");
     })

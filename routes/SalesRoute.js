@@ -8,8 +8,8 @@ router.get('/insert', async (req, res) => {
         id: 1,
         qty: 10,
         total: 20,
-        ProductId: 3,
-        TransactionId: 5
+        ProductId: 6,
+        TransactionId: 1
     }).catch(err => {
         res.send(err)
     })

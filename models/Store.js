@@ -53,6 +53,10 @@ module.exports = (sequelize, DataTypes) => {
         Store.hasMany(models.User, {
             onDelete: 'cascade'
         })
+
+        Store.hasMany(models.AuditTrail, {
+            onDelete: 'cascade'
+        })
     }
 
 
