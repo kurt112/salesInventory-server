@@ -37,11 +37,11 @@ router.get('/data', async (req, res) => {
         .catch((error) => console.log(error))
 
     const data = {
-        store: stores.count,
-        manager: storeManager.count,
-        cashier: cashier.count,
-        product: products.count,
-        supplier: suppliers.count,
+        Store: stores.count,
+        Manager: storeManager.count,
+        Cashier: cashier.count,
+        Product: products.count,
+        Supplier: suppliers.count,
 
     }
 

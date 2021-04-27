@@ -4,6 +4,7 @@ const cors = require('cors')
 const bodyParser = require('body-parser');
 const fileUpload = require('express-fileupload')
 const app = express()
+const verify = require('./utils/jwt')
 
 // setting up cors
 app.use(cors(
@@ -26,18 +27,19 @@ const TransactionRoute = require("./routes/TransactionRoute")
 const UserRoute = require("./routes/UserRoute")
 const AuditTrailRoute = require('./routes/AuditTrail')
 const DashBoardRoute = require('./routes/DashBoardRoute')
-
+const Auth = require('./routes/Authentication')
 
 // route implementation
-app.use('/product', ProductRoute)
-app.use('/user', UserRoute)
-app.use('/transaction', TransactionRoute)
-app.use('/supplier', SupplierRoute)
-app.use('/store', StoreRoute)
-app.use('/sales', SalesRoute)
-app.use('/customer', CustomerRoute)
-app.use('/audit', AuditTrailRoute)
-app.use('/dashboard', DashBoardRoute)
+app.use('/product',verify, ProductRoute)
+app.use('/user',verify, UserRoute)
+app.use('/transaction',verify, TransactionRoute)
+app.use('/supplier', verify,SupplierRoute)
+app.use('/store', verify,StoreRoute)
+app.use('/sales',verify, SalesRoute)
+app.use('/customer',verify, CustomerRoute)
+app.use('/audit',verify, AuditTrailRoute)
+app.use('/dashboard',verify, DashBoardRoute)
+app.use('/', Auth)
 
 app.post('/upload', async (req, res) => {
 

@@ -16,7 +16,7 @@ router.post('/insert', async (req, res) => {
     res.send(user)
 })
 
-router.get('/list', (req, res) => {
+router.get('/list',(req, res) => {
     User.findAll({
         include: [
             {model: Store}
