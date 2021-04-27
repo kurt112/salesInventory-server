@@ -30,7 +30,7 @@ const DashBoardRoute = require('./routes/DashBoardRoute')
 const Auth = require('./routes/Authentication')
 
 // route implementation
-app.use('/product',verify, ProductRoute)
+app.use('/product', ProductRoute)
 app.use('/user',verify, UserRoute)
 app.use('/transaction',verify, TransactionRoute)
 app.use('/supplier', verify,SupplierRoute)
