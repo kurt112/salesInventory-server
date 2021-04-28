@@ -28,6 +28,7 @@ const UserRoute = require("./routes/UserRoute")
 const AuditTrailRoute = require('./routes/AuditTrail')
 const DashBoardRoute = require('./routes/DashBoardRoute')
 const Auth = require('./routes/Authentication')
+const Settings = require('./routes/SettingsRoute')
 
 // route implementation
 app.use('/product', ProductRoute)
@@ -39,6 +40,7 @@ app.use('/sales',verify, SalesRoute)
 app.use('/customer',verify, CustomerRoute)
 app.use('/audit',verify, AuditTrailRoute)
 app.use('/dashboard',verify, DashBoardRoute)
+app.use('/setting', verify, Settings)
 app.use('/', Auth)
 
 app.post('/upload', async (req, res) => {

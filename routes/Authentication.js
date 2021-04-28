@@ -10,7 +10,6 @@ router.use(bodyParser.json());
 router.post('/login', async (req,res) => {
     const {username, password} = req.body
 
-
     const user = await User.findOne({
         where:{
             email: username,

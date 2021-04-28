@@ -3,9 +3,9 @@ const path = require('path')
 let router = express.Router()
 const ImageFolder = path.join(__dirname, '../uploads/image')
 const fs = require('fs');
-const {Product, Supplier, Store} = require('../models')
+const {Product, Supplier, Store,ProductType} = require('../models')
 const verify = require('../utils/jwt')
-router.post('/insert', verify,async (req, res) => {
+router.post('/insert', verify, async (req, res) => {
 
     let qty = req.body.qty
 
@@ -22,7 +22,7 @@ router.post('/insert', verify,async (req, res) => {
     res.send("ok")
 })
 
-router.post('/update', verify,async (req, res) => {
+router.post('/update', verify, async (req, res) => {
 
     const {
         brand,
@@ -35,10 +35,6 @@ router.post('/update', verify,async (req, res) => {
         photo,
         oldCode
     } = req.body
-
-
-    console.log('The old code ')
-    console.log(oldCode)
 
     const data = {
         brand,
@@ -63,7 +59,7 @@ router.post('/update', verify,async (req, res) => {
     res.send("Success")
 })
 
-router.get('/list', verify,(req, res) => {
+router.get('/list', verify, (req, res) => {
 
     const branch = parseInt(req.query.branch)
 
@@ -71,6 +67,7 @@ router.get('/list', verify,(req, res) => {
         include: [
             {model: Supplier},
             {model: Store},
+            {model: ProductType}
         ],
         where: branch === 0 ? null : {StoreID: req.query.branch}
     }).then((product) => {
@@ -81,7 +78,7 @@ router.get('/list', verify,(req, res) => {
 })
 
 
-router.post('/delete', verify,async (req, res) => {
+router.post('/delete', verify, async (req, res) => {
     let qty = req.body.qty
     const code = req.body.code
 
@@ -124,11 +121,26 @@ router.get("/getImage/:name", (req, res) => {
     const {name} = req.params
     const pic = path.join(__dirname, '../uploads/image', name)
     res.sendFile(pic);
-});
+})
+
+router.post("/deleteImage", async (req, res) => {
+    const {name} = req.body
+    const pic = path.join(__dirname, '../uploads/image', name)
+
+
+    await fs.unlink(pic, (err => {
+        if (err !== null) {
+            res.status(404).send({message: 'Images Not Exist'})
+        }else{
+            res.send({message: 'Delete Success'})
+        }
+    }))
+
+})
 
 
 // get all images in the folder
-router.get("/images", verify,(req, res) => {
+router.get("/images", verify, (req, res) => {
     const data = []
 
     fs.readdirSync(ImageFolder).forEach(file => {
@@ -140,7 +152,7 @@ router.get("/images", verify,(req, res) => {
 });
 
 
-router.post("/transfer", verify,async (req, res) => {
+router.post("/transfer", verify, async (req, res) => {
     const {code, qty, storeID} = req.body
 
     const data = await Product.findAll({
@@ -171,15 +183,16 @@ router.post("/transfer", verify,async (req, res) => {
     }
 })
 
-router.post('/find',verify, async (req, res) => {
+router.post('/find', verify, async (req, res) => {
 
     const {code} = req.body
 
     const data = await Product.findAll({
         limit: 1,
-        where: {
-            code
-        }
+        include: [
+            {model: ProductType}
+        ],
+        where: {code}
     })
 
     if (data.length === 0) {
