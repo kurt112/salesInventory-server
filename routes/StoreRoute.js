@@ -13,9 +13,7 @@ router.post('/insert', async (req, res) => {
 })
 
 router.get('/list', (req, res) => {
-    Store.findAll({
-
-    }).then((supplier) => {
+    Store.findAll({}).then((supplier) => {
         res.send(supplier)
     }).catch((error) => {
         console.log(error);
@@ -24,22 +22,23 @@ router.get('/list', (req, res) => {
 
 
 router.post('/update', async (req, res) => {
-    console.log("The id " + req.body.id)
-
+    const {code} = req.body
+    console.log(req.body)
     try {
         const result = await Store.update(req.body,
             {
                 where:
                     {
-                        id: req.body.id
+                        code
                     }
             }
         )
+        console.log(result)
         res.send(result)
     } catch (ignored) {
         res.status(400).send({
-            title: `Store can't find`,
-            message: `Can't update Store    `
+            title: `No Branch Detected`,
+            message: `Can't Update Branch    `
         })
     }
 })
@@ -47,47 +46,45 @@ router.post('/update', async (req, res) => {
 
 router.post('/delete', async (req, res) => {
 
-    const email = req.body.email
-    console.log(email)
-
+    const {code} = req.body
     let error;
     try {
         const supplier = await Store.destroy({
-            where: {email}
+            where: {code}
         })
 
-        if (supplier === 0) throw new Error('No Store')
+        if (supplier === 0) throw new Error('No Branch Detected')
     } catch (e) {
         error = e
     }
 
     if (error) {
         res.status(400).send({
-            title: `Store Delete`,
-            message: `Deleting this store can cause fatal error`
+            title: `Branch Delete`,
+            message: `Deleting This Branch Can Cause Fatal Error`
         })
-    } else res.send("Store Deleted Success")
+    } else res.send("Branch Deleted Success")
 
 
 })
 
-router.post('/find', async (req,res) => {
+router.post('/find', async (req, res) => {
 
-    const {email} = req.body
+    const {code} = req.body
 
     const data = await Store.findAll({
         limit: 1,
         where: {
-            email
+            code
         }
     })
 
-    if(data.length === 0){
+    if (data.length === 0) {
         res.status(400).send({
             title: 'Store Not Found',
             message: 'Enter Proper Store Email'
         })
-    }else{
+    } else {
         res.send(data)
     }
 })

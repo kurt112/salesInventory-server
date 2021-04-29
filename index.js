@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const fileUpload = require('express-fileupload')
 const app = express()
 const verify = require('./utils/jwt')
-
+const {User,Store} = require('./models')
 // setting up cors
 app.use(cors(
     {
@@ -63,7 +63,39 @@ app.post('/upload', async (req, res) => {
 })
 
 db.sequelize.sync().then(() => {
-    app.listen(3001, () => {
-        console.log("Server running");
+    app.listen(3001, async () => {
+
+        const store = await Store.findOne({
+            where: {id: 1}
+        })
+
+        if(!store){
+            await Store.create({
+                code: 'jard-main-location',
+                location: 'San Pablo',
+                email: 'owner@gmail.com',
+                postalCode: '1850',
+                mobile_no: '0515152',
+                tel_no: '921933'
+            })
+        }
+
+
+        const user = await User.findOne({
+            where: {id:1}
+        })
+
+        if(!user){
+            await User.create({
+                email: 'owner',
+                password: 'jars',
+                firstName: 'owner',
+                lastName: 'lastName',
+                role: 3,
+                status: 1,
+                StoreId: 1,
+            })
+        }
+
     })
 })

@@ -1,6 +1,9 @@
 module.exports = (sequelize, DataTypes) => {
     const Store = sequelize.define("Store", {
-        name: {
+        code: {
+            type: DataTypes.STRING
+        },
+        location: {
             type: DataTypes.STRING,
             allowNull: false,
             validate: {
@@ -9,21 +12,9 @@ module.exports = (sequelize, DataTypes) => {
         },
         email: {
             type: DataTypes.STRING,
-            validate: {
-                notEmpty: true,
-            },
             unique: {
                 msg: 'Email Already Exist'
             }
-        },
-        address: {
-            type: DataTypes.STRING
-        },
-        city: {
-            type: DataTypes.STRING
-        },
-        state: {
-            type: DataTypes.STRING
         },
         postalCode: {
             type: DataTypes.INTEGER
@@ -33,9 +24,6 @@ module.exports = (sequelize, DataTypes) => {
         },
         tel_no: {
             type: DataTypes.STRING
-        },
-        deletedAt: {
-            type: DataTypes.DATE
         }
     });
 
