@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const fileUpload = require('express-fileupload')
 const app = express()
 const verify = require('./utils/jwt')
-const {User,Store} = require('./models')
+const {User, Store} = require('./models')
 // setting up cors
 app.use(cors(
     {
@@ -32,14 +32,14 @@ const Settings = require('./routes/SettingsRoute')
 
 // route implementation
 app.use('/product', ProductRoute)
-app.use('/user',verify, UserRoute)
-app.use('/transaction',verify, TransactionRoute)
-app.use('/supplier', verify,SupplierRoute)
-app.use('/store', verify,StoreRoute)
-app.use('/sales',verify, SalesRoute)
-app.use('/customer',verify, CustomerRoute)
-app.use('/audit',verify, AuditTrailRoute)
-app.use('/dashboard',verify, DashBoardRoute)
+app.use('/user', verify, UserRoute)
+app.use('/transaction', verify, TransactionRoute)
+app.use('/supplier', verify, SupplierRoute)
+app.use('/store', verify, StoreRoute)
+app.use('/sales', verify, SalesRoute)
+app.use('/customer', verify, CustomerRoute)
+app.use('/audit', verify, AuditTrailRoute)
+app.use('/dashboard', verify, DashBoardRoute)
 app.use('/setting', verify, Settings)
 app.use('/', Auth)
 
@@ -69,32 +69,40 @@ db.sequelize.sync().then(() => {
             where: {id: 1}
         })
 
-        if(!store){
-            await Store.create({
-                code: 'jard-main-location',
-                location: 'San Pablo',
-                email: 'owner@gmail.com',
-                postalCode: '1850',
-                mobile_no: '0515152',
-                tel_no: '921933'
-            })
+        if (!store) {
+            try {
+                await Store.create({
+                    code: 'jard-main-location',
+                    location: 'San Pablo',
+                    email: 'owner@gmail.com',
+                    postalCode: '1850',
+                    mobile_no: '0515152',
+                    tel_no: '921933'
+                })
+            } catch (ignored) {
+                console.log("Store Already Exist")
+            }
         }
 
 
         const user = await User.findOne({
-            where: {id:1}
+            where: {id: 1}
         })
 
-        if(!user){
-            await User.create({
-                email: 'owner',
-                password: 'jars',
-                firstName: 'owner',
-                lastName: 'lastName',
-                role: 3,
-                status: 1,
-                StoreId: 1,
-            })
+        if (!user) {
+            try {
+                await User.create({
+                    email: 'owner',
+                    password: 'jars',
+                    firstName: 'owner',
+                    lastName: 'lastName',
+                    role: 3,
+                    status: 1,
+                    StoreId: 1,
+                })
+            } catch (ignored) {
+                console.log("User Already exist")
+            }
         }
 
     })
