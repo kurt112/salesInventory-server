@@ -3,21 +3,23 @@ const path = require('path')
 let router = express.Router()
 const ImageFolder = path.join(__dirname, '../uploads/image')
 const fs = require('fs');
-const {Product, Supplier, Store,ProductType} = require('../models')
+const {Product, Supplier, Store, ProductType} = require('../models')
 const verify = require('../utils/jwt')
 router.post('/insert', verify, async (req, res) => {
 
     let qty = req.body.qty
 
-    while (qty !== 0) {
-        await Product.create(req.body).catch(err => {
-            if (err) {
-                console.log(err);
-            }
-        })
+    console.log(req.body)
 
-        qty--
-    }
+    // while (qty !== 0) {
+    await Product.create(req.body).catch(err => {
+        if (err) {
+            console.log(err);
+        }
+    })
+
+    // qty--
+    // }
 
     res.send("ok")
 })
@@ -131,7 +133,7 @@ router.post("/deleteImage", async (req, res) => {
     await fs.unlink(pic, (err => {
         if (err !== null) {
             res.status(404).send({message: 'Images Not Exist'})
-        }else{
+        } else {
             res.send({message: 'Delete Success'})
         }
     }))

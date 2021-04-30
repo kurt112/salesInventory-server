@@ -2,18 +2,13 @@ const express = require('express')
 let router = express.Router()
 const {Transaction,Customer,Store,User} = require('../models')
 
-router.get('/insert', async (req, res) => {
-    const transaction = await Transaction.create({
-        amount: 22.1,
-        discount: 0.0,
-        CustomerId:1,
-        UserId: 6,
-        StoreId: 1
-    }).catch(err => {
+router.post('/insert', async (req, res) => {
+    const transaction = await Transaction.create(req.body).catch(err => {
         if (err) {
-            console.log(err);
+           return res.status(404).send(err)
         }
     })
+
 
     res.send(transaction)
 })

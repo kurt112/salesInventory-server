@@ -2,33 +2,43 @@ const express = require('express')
 let router = express.Router()
 const {Customer} = require('../models')
 
-router.get('/insert', async (req, res) => {
-    const supplier = await Customer.create({
-        name: "Pedre",
-        email: "password",
-        address: "kurt",
-        city: "orioque",
-        state: "San Mateo",
-        postalCode: 2,
-        mobile_no:'0961714338',
-        tel_no:2
-    }).catch(err => {
-        if (err) {
-            console.log(err);
-        }
-    })
+router.post('/insert', async (req, res) => {
+    const customer = await Customer.create(req.body)
+        .catch(ignored=>  {
+            res.status(400).send({
+                title: 'Email Should be unique',
+                message: 'Customer email is existing'
 
-    res.send(supplier)
+            })
+
+
+        })
+    res.send(customer)
 })
 
-router.get('/list', (req, res) => {
-    Customer.findAll({
+
+router.get('/list', async (req, res) => {
+    await Customer.findAll({
         // where: {firstName: "John"}
     }).then((supplier) => {
         res.send(supplier)
     }).catch((error) => {
         console.log(error);
     })
+})
+
+router.post('/find', async (req, res) => {
+    const {email} = req.body
+
+    await Customer.findOne({
+        where: {email}
+    }).then(e => {
+        res.send(e)
+    }).catch(error => {
+        console.log(error)
+        res.status(404).send(error)
+    })
+
 })
 
 

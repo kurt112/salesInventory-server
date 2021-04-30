@@ -2,7 +2,7 @@ require('dotenv').config()
 
 const express = require('express')
 let router = express.Router()
-const {User} = require('../models')
+const {User,Store} = require('../models')
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken')
 router.use(bodyParser.json());
@@ -11,16 +11,20 @@ router.post('/login', async (req,res) => {
     const {username, password} = req.body
 
     const user = await User.findOne({
+        include: [
+            {model: Store},
+        ],
         where:{
             email: username,
             password: password
         }
+
+    }).catch(ignored => {
+        return res.sendStatus(404)
     })
 
     if(user === null){
-        res.sendStatus(404)
-
-        return
+        return res.sendStatus(404)
     }
 
     const accessToken = jwt.sign({user}, process.env.ACCESS_TOKEN_SECRET)
