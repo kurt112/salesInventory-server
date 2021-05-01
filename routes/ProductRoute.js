@@ -3,23 +3,25 @@ const path = require('path')
 let router = express.Router()
 const ImageFolder = path.join(__dirname, '../uploads/image')
 const fs = require('fs');
-const {Product, Supplier, Store, ProductType} = require('../models')
+const {Product, Supplier, Store, ProductType, Setting} = require('../models')
 const verify = require('../utils/jwt')
+const {Sequelize} = require("sequelize");
+
 router.post('/insert', verify, async (req, res) => {
 
     let qty = req.body.qty
 
     console.log(req.body)
 
-    // while (qty !== 0) {
-    await Product.create(req.body).catch(err => {
-        if (err) {
-            console.log(err);
-        }
-    })
+    while (qty !== 0) {
+        await Product.create(req.body).catch(err => {
+            if (err) {
+                console.log(err);
+            }
+        })
 
-    // qty--
-    // }
+        qty--
+    }
 
     res.send("ok")
 })
@@ -64,6 +66,15 @@ router.post('/update', verify, async (req, res) => {
 router.get('/list', verify, (req, res) => {
 
     const branch = parseInt(req.query.branch)
+    const status = req.query.status
+    const data = {
+        status: status,
+        StoreID: req.query.branch
+    }
+
+    if (branch === 0) {
+        delete data.StoreID
+    }
 
     Product.findAll({
         include: [
@@ -71,7 +82,7 @@ router.get('/list', verify, (req, res) => {
             {model: Store},
             {model: ProductType}
         ],
-        where: branch === 0 ? null : {StoreID: req.query.branch}
+        where: data
     }).then((product) => {
         res.send(product)
     }).catch((error) => {

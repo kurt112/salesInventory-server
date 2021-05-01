@@ -56,21 +56,106 @@ router.post('/setCriticalStock', async (req, res) => {
 })
 
 router.get('/getCriticalStock', async (req, res) => {
-    const data = {
-        critical_stock: 1,
-    }
-
     let stock = await Setting.findOne({
         where: {id: 1}
     })
 
-    if (stock === null) {
-        stock = await Setting.create(data).catch(error => {
-            console.log(error)
+    res.send({stock})
+})
+
+router.get('/getCriticalStock', async (req, res) => {
+    let stock = await Setting.findOne({
+        where: {id: 1}
+    })
+
+    const currentCriticalStockNumber = stock.critical_stock
+
+    const stores = []
+    const criticalStock = []
+    const codes = []
+
+    await Store.findAll({}).then(e => {
+        e.map((i) => {
+            stores.push(i.dataValues.id)
         })
+    })
+
+    const data = await Product.findAndCountAll({
+        attributes: [Sequelize.fn('DISTINCT', Sequelize.col('code')), 'code'],
+        where: {
+            status: 'Available',
+        },
+        distinct: true,
+        col: 'code'
+    })
+        .then(e => e)
+        .catch(error => console.log(error))
+
+    for (let i = 0; i < data.rows.length; i++) {
+        codes.push(data.rows[i].code)
     }
 
-    res.send({stock})
+
+    for (let i = 0; i < stores.length; i++) {
+        for (let j = 0; j < codes.length; j++) {
+            await Product.findAll({
+                includes: [
+                    {model: Store}
+                ],
+                where: {
+                    StoreId: stores[i],
+                    status: 'Available',
+                    code: codes[j],
+                },
+                limit: currentCriticalStockNumber + 1
+            }).then(e => {
+                if (e.length <= currentCriticalStockNumber) {
+                    if (e[0] === undefined) {
+                        const getData = async () => {
+                            let product = await Product.findOne({
+                                where: {
+                                    code: codes[j],
+                                }
+                            })
+
+                            let newStore = await Store.findOne({
+                                where: {id: stores[i]}
+                            })
+
+                            product.StoreId = stores[i]
+                            product["Store"] = newStore
+
+                            criticalStock.push({
+                                product,
+                                branch: newStore
+                            })
+                        }
+                        getData().then(ignored => {
+                        })
+                    } else {
+                        const getData = async () => {
+
+                            let newStore = await Store.findOne({
+                                where: {id: stores[i]}
+                            })
+
+                            criticalStock.push({
+                                product: e[0].dataValues,
+                                branch: newStore
+                            })
+
+                        }
+                        getData().then(ignored => {
+                        })
+                    }
+                }
+            })
+        }
+    }
+
+
+    res.send(criticalStock)
+
 })
 
 

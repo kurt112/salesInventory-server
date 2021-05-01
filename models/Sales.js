@@ -1,22 +1,5 @@
-module.exports = (sequelize, DataTypes) => {
+module.exports = (sequelize) => {
     const Sales = sequelize.define("Sales", {
-        qty: {
-            type: DataTypes.DOUBLE,
-            allowNull: false,
-            validate: {
-                notEmpty: true
-            }
-        },
-        total: {
-            type: DataTypes.DOUBLE,
-            allowNull: false,
-            validate: {
-                notEmpty: true
-            }
-        },
-        deleteAt: {
-            type: DataTypes.DATE,
-        }
 
     });
 

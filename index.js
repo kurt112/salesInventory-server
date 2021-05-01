@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const fileUpload = require('express-fileupload')
 const app = express()
 const verify = require('./utils/jwt')
-const {User, Store,Customer} = require('./models')
+const {User, Store,Customer,Setting} = require('./models')
 // setting up cors
 app.use(cors(
     {
@@ -61,6 +61,8 @@ app.post('/upload', async (req, res) => {
 
     res.send(`Hello World`)
 })
+
+
 
 db.sequelize.sync().then(() => {
     app.listen(3001, async () => {
@@ -126,5 +128,22 @@ db.sequelize.sync().then(() => {
             }
         }
 
+
+        const data = {
+            critical_stock: 1,
+        }
+
+        let stock = await Setting.findOne({
+            where: {id: 1}
+        })
+
+        if (stock === null) {
+             await Setting.create(data).catch(error => {
+                console.log(error)
+            })
+        }
+
     })
 })
+
+
