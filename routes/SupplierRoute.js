@@ -1,10 +1,12 @@
 const express = require('express')
 let router = express.Router()
 const {Supplier} = require('../models')
-
+const Insert=  require('../utils/InsertAuditTrail')
 router.post('/insert', async (req, res) => {
-
+    const user = req.user.user
     await Supplier.create(req.body).then(e => {
+        Insert(user.StoreId,user.id,
+            ' Added Supplier With The Email Of ' + e.email + ' In Branch ' + user.Store.location,0)
         res.send(e)
     }).catch(ignored => {
         res.status(400).send({
@@ -26,6 +28,7 @@ router.get('/list', (req, res) => {
 
 
 router.post('/update', async (req, res) => {
+    const user = req.user.user
     try {
         const result = await Supplier.update(req.body,
             {
@@ -35,6 +38,8 @@ router.post('/update', async (req, res) => {
                     }
             }
         )
+        Insert(user.StoreId,user.id,
+            ' Updated Supplier With The Email Of ' +result.email + ' In Branch ' + user.Store.location,0)
         res.send(result)
     } catch (ignored) {
         res.status(400).send({
@@ -46,7 +51,7 @@ router.post('/update', async (req, res) => {
 
 
 router.post('/delete', async (req, res) => {
-
+    const user = req.user.user
     const email = req.body.email
 
 
@@ -57,6 +62,9 @@ router.post('/delete', async (req, res) => {
         })
 
         if (supplier === 0) throw new Error('No Supplier')
+
+        Insert(user.StoreId,user.id,
+            ' Deleted Supplier With The Email Of ' + email + ' In Branch ' + user.Store.location,0)
     } catch (e) {
         error = e
     }

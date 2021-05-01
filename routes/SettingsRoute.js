@@ -1,16 +1,22 @@
 const express = require('express')
 let router = express.Router()
-const {Setting, ProductType} = require('../models')
+const {Setting, ProductType,Product,Store,Supplier} = require('../models')
 
+const Insert=  require('../utils/InsertAuditTrail')
+const {Sequelize} = require("sequelize");
 
 router.post('/insertProductType', async (req, res) => {
-
+    const user = req.user.user
     const {name} = req.body
     const productType = await ProductType.create({
         name
     }).catch(ignored => {
         res.status(404)
     })
+
+    Insert(user.StoreId,user.id,
+        'Added Product Type ' + name + ' In Branch ' + user.Store.location,0)
+
 
     res.send(productType)
 })
@@ -24,7 +30,7 @@ router.get('/productTypeList', async (req, res) => {
 })
 
 router.post('/deleteProductType', async (req, res) => {
-
+    const user = req.user.user
     const {name} = req.body
     let error = false
     await ProductType.destroy({
@@ -36,12 +42,14 @@ router.post('/deleteProductType', async (req, res) => {
     if (error) {
         res.status(404).send({message: "Can't Delete This Item"})
     } else {
+        Insert(user.StoreId,user.id,
+            'Delete Product Type ' + name + ' In Branch ' + user.Store.location,0)
         res.send({message: 'Deleted Success'})
     }
 })
 
 router.post('/setCriticalStock', async (req, res) => {
-
+    const user = req.user.user
     const {value} = req.body
     const data = {
         critical_stock: value,
@@ -51,7 +59,8 @@ router.post('/setCriticalStock', async (req, res) => {
         where: {id: 1}
     })
 
-
+    Insert(user.StoreId,user.id,
+        ' Set Critical Product Quantity To ' + value + ' In Branch ' + user.Store.location,0)
     res.send({message: 'Update Critical Stock Success'})
 })
 
@@ -63,7 +72,7 @@ router.get('/getCriticalStock', async (req, res) => {
     res.send({stock})
 })
 
-router.get('/getCriticalStock', async (req, res) => {
+router.get('/getCriticalStockProduct', async (req, res) => {
     let stock = await Setting.findOne({
         where: {id: 1}
     })

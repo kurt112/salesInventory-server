@@ -1,8 +1,9 @@
 const express = require('express')
 let router = express.Router()
 const {Customer} = require('../models')
-
-router.post('/insert', async (req, res) => {
+const Insert=  require('../utils/InsertAuditTrail')
+router.post('/insert',async (req, res) => {
+    const user = req.user.user
     const customer = await Customer.create(req.body)
         .catch(ignored=>  {
             res.status(400).send({
@@ -10,9 +11,9 @@ router.post('/insert', async (req, res) => {
                 message: 'Customer email is existing'
 
             })
-
-
         })
+    Insert(user.StoreId,user.id,
+        ' Created Customer With The Email Of ' + customer.email + user.Store.location,0)
     res.send(customer)
 })
 

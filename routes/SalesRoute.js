@@ -1,7 +1,6 @@
 const express = require('express')
 let router = express.Router()
 const {Sales, Product, Transaction} = require('../models')
-
 router.get('/insert', async (req, res) => {
 
     const sales = await Sales.create({

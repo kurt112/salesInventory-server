@@ -3,15 +3,13 @@ const path = require('path')
 let router = express.Router()
 const ImageFolder = path.join(__dirname, '../uploads/image')
 const fs = require('fs');
-const {Product, Supplier, Store, ProductType, Setting} = require('../models')
+const {Product, Supplier, Store, ProductType, Setting, AuditTrail} = require('../models')
 const verify = require('../utils/jwt')
-const {Sequelize} = require("sequelize");
-
+const Insert=  require('../utils/InsertAuditTrail')
 router.post('/insert', verify, async (req, res) => {
 
     let qty = req.body.qty
-
-    console.log(req.body)
+    const user = req.user.user
 
     while (qty !== 0) {
         await Product.create(req.body).catch(err => {
@@ -23,11 +21,15 @@ router.post('/insert', verify, async (req, res) => {
         qty--
     }
 
+    Insert(user.StoreId,user.id,
+        'Added Product With The Code Of ' + req.body.code + ' Quantity Of ' + req.body.qty +' In Branch ' + user.Store.location,0)
+
     res.send("ok")
 })
 
 router.post('/update', verify, async (req, res) => {
-
+    const branch = parseInt(req.query.branch)
+    const user = req.user.user
     const {
         brand,
         code,
@@ -51,14 +53,28 @@ router.post('/update', verify, async (req, res) => {
         photo,
     }
 
+    const filterData = {
+        status: 'Available',
+        StoreID: req.query.branch,
+        code: oldCode
+    }
+
+    if (branch === 0) {
+        delete filterData.StoreID
+    }
+
     try {
         await Product.update(data,
-            {where: {code: oldCode}}
+            {where: filterData}
         )
 
     } catch (err) {
         console.log(err)
     }
+
+    Insert(user.StoreId,user.id,
+        ' Update Product With The Code Of ' + code + ' In Branch ' + user.Store.location,0)
+
 
     res.send("Success")
 })
@@ -92,14 +108,24 @@ router.get('/list', verify, (req, res) => {
 
 
 router.post('/delete', verify, async (req, res) => {
+
+    const user = req.user.user
     let qty = req.body.qty
-    const code = req.body.code
+    const {code,branch} = req.body
+
+    const data = {
+        status: 'Available',
+        StoreID: branch,
+        code,
+    }
+
+    if (branch === 0) {
+        delete data.StoreID
+    }
 
 
     const size = await Product.findAll({
-        where: {
-            code
-        }
+        where:data
     })
 
     if (size.length === 0) {
@@ -126,6 +152,11 @@ router.post('/delete', verify, async (req, res) => {
             console.log(error)
         })
 
+
+        Insert(user.StoreId,user.id,
+            'Delete Product With The Code Of ' + code + ' Quantity Of ' + req.body.qty +' In Branch ' + user.Store.location,0)
+
+
         res.send("Delete Success")
     }
 })
@@ -136,7 +167,8 @@ router.get("/getImage/:name", (req, res) => {
     res.sendFile(pic);
 })
 
-router.post("/deleteImage", async (req, res) => {
+router.post("/deleteImage", verify,async (req, res) => {
+    const user = req.user.user
     const {name} = req.body
     const pic = path.join(__dirname, '../uploads/image', name)
 
@@ -145,9 +177,15 @@ router.post("/deleteImage", async (req, res) => {
         if (err !== null) {
             res.status(404).send({message: 'Images Not Exist'})
         } else {
+            Insert(user.StoreId,user.id,
+                'Delete Product Photo With The Name Of ' + name + ' In Branch ' + user.Store.location,0)
+
+
             res.send({message: 'Delete Success'})
         }
     }))
+
+
 
 })
 
@@ -198,14 +236,26 @@ router.post("/transfer", verify, async (req, res) => {
 
 router.post('/find', verify, async (req, res) => {
 
-    const {code} = req.body
+    const {code,branch} = req.body
+
+    console.log(req.body)
+
+    const filterData = {
+        status: 'Available',
+        StoreID: branch,
+        code
+    }
+
+    if (branch === 0) {
+        delete filterData.StoreID
+    }
 
     const data = await Product.findAll({
         limit: 1,
         include: [
             {model: ProductType}
         ],
-        where: {code}
+        where: filterData
     })
 
     if (data.length === 0) {

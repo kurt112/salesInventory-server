@@ -25,7 +25,7 @@ router.get('/list', (req, res) => {
             {model: Store},
         ],
     }).then((supplier) => {
-        res.send(supplier)
+        res.send(supplier.reverse())
     }).catch((error) => {
         console.log(error);
     })

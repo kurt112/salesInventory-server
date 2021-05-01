@@ -1,9 +1,9 @@
 const express = require('express')
 let router = express.Router()
 const {Transaction, Customer, Store, User, Product, Sales} = require('../models')
-
+const Insert=  require('../utils/InsertAuditTrail')
 router.post('/insert', async (req, res) => {
-
+    const user = req.user.user
     const item = req.body.items
 
 
@@ -12,6 +12,9 @@ router.post('/insert', async (req, res) => {
             return res.status(404).send(err)
         }
     })
+
+    Insert(user.StoreId,user.id,
+        ' Created Transaction With The Code Of ' + transaction.code + ' With The Total Of ₱ ' + transaction.amount + ' In Branch ' + user.Store.location,0)
 
     for (let i = 0; i < item.length; i++) {
         let qty = item[i].qty

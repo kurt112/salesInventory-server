@@ -1,10 +1,13 @@
 const express = require('express')
 let router = express.Router()
 const {User, Store} = require('../models')
-
+const Insert=  require('../utils/InsertAuditTrail')
 router.post('/insert', async (req, res) => {
-
+    const user = req.user.user
     await User.create(req.body).then(e => {
+        Insert(user.StoreId,user.id,
+            ' Created User With The Email Of ' + user.email + ' In Branch ' + user.Store.location,0)
+
         res.send(e)
     }).catch(ignored => {
         res.status(400).send({
@@ -31,7 +34,7 @@ router.get('/list',(req, res) => {
 
 
 router.post('/delete', async (req, res) => {
-
+    const users = req.user.user
     let error;
     try {
         const user = await User.destroy({
@@ -40,7 +43,11 @@ router.post('/delete', async (req, res) => {
             }
         })
 
+
         if (user === 0) throw new Error('No user Deleted')
+
+        Insert(users.StoreId,users.id,
+            ' Deleted User With The Email Of ' + req.body.email + ' In Branch ' + users.Store.location,0)
     } catch (e) {
         error = e
     }
@@ -79,6 +86,7 @@ router.post('/find', async (req,res) => {
 
 
 router.post('/update', async (req, res) => {
+    const users = req.user.user
     try {
         const result = await User.update(req.body,
             {
@@ -88,8 +96,12 @@ router.post('/update', async (req, res) => {
                     }
             }
         )
+
+        Insert(users.StoreId,users.id,
+            ' Updated User With The Email Of ' + req.body.email + ' In Branch ' + users.Store.location,0)
         res.send(result)
     } catch (ignored) {
+        console.log(ignored)
         res.status(400).send({
             title: `User can't find`,
             message: `Can't update User`
