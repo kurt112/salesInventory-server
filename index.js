@@ -6,6 +6,7 @@ const fileUpload = require('express-fileupload')
 const app = express()
 const verify = require('./utils/jwt')
 const {User, Store,Customer,Setting} = require('./models')
+const PORT = process.env.PORT || 3000;
 // setting up cors
 app.use(cors(
     {
@@ -65,7 +66,7 @@ app.post('/upload', async (req, res) => {
 
 
 db.sequelize.sync().then(() => {
-    app.listen(process.env.PORT || 3001, async () => {
+    app.listen(PORT, async () => {
         console.log("i am listening ")
         const customer = await Customer.findOne({
             where: {id: 1}
