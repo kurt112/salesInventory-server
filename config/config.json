@@ -19,6 +19,9 @@
     "password": "oHrN7gd8wbOBaz4K",
     "database": "jarssalesinventory",
     "host": "34.68.178.116",
-    "dialect": "mysql"
+    "dialect": "mysql",
+    "dialectOptions": {
+      "ssl": true
+    }
   }
 }
