@@ -64,88 +64,88 @@ app.use('/', Auth)
 
 
 
-// db.sequelize.sync().then(() => {
-//     app.listen(process.env.PORT || 3001, async () => {
-//         console.log("i am listening ")
-//         const customer = await Customer.findOne({
-//             where: {id: 1}
-//         })
-//
-//         if(!customer){
-//             try{
-//                 await Customer.create({
-//                     name: 'Hidden',
-//                     email: 'Hidden@email.com',
-//                     address: 'Hidden',
-//                     city: 'Hidden',
-//                     postalCode: 1,
-//                     mobile_no: 'Hidden',
-//                     tel_no: 'Hidden'
-//
-//                 })
-//             }catch(error) {
-//                 console.log(error)
-//             }
-//         }
-//
-//         const store = await Store.findOne({
-//             where: {id: 1}
-//         })
-//
-//         if (!store) {
-//             try {
-//                 await Store.create({
-//                     code: 'jard-main-location',
-//                     location: 'San Pablo',
-//                     email: 'owner@gmail.com',
-//                     postalCode: '1850',
-//                     mobile_no: '0515152',
-//                     tel_no: '921933'
-//                 })
-//             } catch (ignored) {
-//                 console.log("Store Already Exist")
-//             }
-//         }
-//
-//
-//         const user = await User.findOne({
-//             where: {id: 1}
-//         })
-//
-//         if (!user) {
-//             try {
-//                 await User.create({
-//                     email: 'owner',
-//                     password: 'jars',
-//                     firstName: 'owner',
-//                     lastName: 'lastName',
-//                     role: 3,
-//                     status: 1,
-//                     StoreId: 1,
-//                 })
-//             } catch (ignored) {
-//                 console.log("User Already exist")
-//             }
-//         }
-//
-//
-//         const data = {
-//             critical_stock: 1,
-//         }
-//
-//         let stock = await Setting.findOne({
-//             where: {id: 1}
-//         })
-//
-//         if (stock === null) {
-//              await Setting.create(data).catch(error => {
-//                 console.log(error)
-//             })
-//         }
-//
-//     })
-// })
+db.sequelize.sync().then(() => {
+    app.listen(process.env.PORT || 3001, async () => {
+        console.log("i am listening ")
+        // const customer = await Customer.findOne({
+        //     where: {id: 1}
+        // })
+        //
+        // if(!customer){
+        //     try{
+        //         await Customer.create({
+        //             name: 'Hidden',
+        //             email: 'Hidden@email.com',
+        //             address: 'Hidden',
+        //             city: 'Hidden',
+        //             postalCode: 1,
+        //             mobile_no: 'Hidden',
+        //             tel_no: 'Hidden'
+        //
+        //         })
+        //     }catch(error) {
+        //         console.log(error)
+        //     }
+        // }
+        //
+        // const store = await Store.findOne({
+        //     where: {id: 1}
+        // })
+        //
+        // if (!store) {
+        //     try {
+        //         await Store.create({
+        //             code: 'jard-main-location',
+        //             location: 'San Pablo',
+        //             email: 'owner@gmail.com',
+        //             postalCode: '1850',
+        //             mobile_no: '0515152',
+        //             tel_no: '921933'
+        //         })
+        //     } catch (ignored) {
+        //         console.log("Store Already Exist")
+        //     }
+        // }
+        //
+        //
+        // const user = await User.findOne({
+        //     where: {id: 1}
+        // })
+        //
+        // if (!user) {
+        //     try {
+        //         await User.create({
+        //             email: 'owner',
+        //             password: 'jars',
+        //             firstName: 'owner',
+        //             lastName: 'lastName',
+        //             role: 3,
+        //             status: 1,
+        //             StoreId: 1,
+        //         })
+        //     } catch (ignored) {
+        //         console.log("User Already exist")
+        //     }
+        // }
+        //
+        //
+        // const data = {
+        //     critical_stock: 1,
+        // }
+        //
+        // let stock = await Setting.findOne({
+        //     where: {id: 1}
+        // })
+        //
+        // if (stock === null) {
+        //      await Setting.create(data).catch(error => {
+        //         console.log(error)
+        //     })
+        // }
 
-app.listen(process.env.PORT || 3001)
+    })
+})
+
+// app.listen(process.env.PORT || 3001)
 
 
