@@ -14,7 +14,7 @@ router.post('/insert', async (req, res) => {
     })
 
     Insert(user.StoreId,user.id,
-        ' Created Transaction With The Code Of ' + transaction.code + ' With The Total Of ₱ ' + transaction.amount + ' In Branch ' + user.Store.location,0)
+        ' Created Transaction With The Code Of ' + transaction.code + ' With The Total Of ₱ ' + transaction.amount + ' In Branch ' + user.Store.location,transaction.amount)
 
     for (let i = 0; i < item.length; i++) {
         let qty = item[i].qty
