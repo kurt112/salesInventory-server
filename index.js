@@ -65,7 +65,7 @@ app.post('/upload', async (req, res) => {
 
 
 db.sequelize.sync().then(() => {
-    app.listen(3001, async () => {
+    app.listen(process.env.PORT || 3001, async () => {
 
         const customer = await Customer.findOne({
             where: {id: 1}
