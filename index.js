@@ -65,7 +65,7 @@ app.post('/upload', async (req, res) => {
 
 
 
-db.sequelize.sync().then(() => {
+// db.sequelize.sync().then(() => {
     app.listen(PORT, async () => {
         // console.log("i am listening ")
         // const customer = await Customer.findOne({
@@ -144,7 +144,7 @@ db.sequelize.sync().then(() => {
         //     })
         // }
     })
-})
+// })
 
 // app.listen(process.env.PORT || 3001)
 
