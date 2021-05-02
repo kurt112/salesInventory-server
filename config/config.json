@@ -1,9 +1,10 @@
+
 {
   "development": {
     "username": "root",
-    "password": "pokemondeluge123",
-    "database": "sales_inventory",
-    "host": "localhost",
+    "password": "oHrN7gd8wbOBaz4K",
+    "database": "jarssalesinventory",
+    "host": "34.68.178.116",
     "dialect": "mysql"
   },
   "test": {
