@@ -15,9 +15,9 @@
   },
   "production": {
     "username": "root",
-    "password": null,
-    "database": "database_production",
-    "host": "127.0.0.1",
+    "password": "oHrN7gd8wbOBaz4K",
+    "database": "jarssalesinventory",
+    "host": "34.68.178.116",
     "dialect": "mysql"
   }
 }
