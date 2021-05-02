@@ -7,13 +7,13 @@ const app = express()
 const verify = require('./utils/jwt')
 const {User, Store,Customer,Setting} = require('./models')
 // setting up cors
-// app.use(cors(
-//     {
-//         methods: ['GET', 'POST', 'PATCH', 'DELETE'],
-//         origin: 'http://localhost:3000',
-//     }
-// ))
-//
+app.use(cors(
+    {
+        methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+        origin: 'http://localhost:3000',
+    }
+))
+
 app.use(bodyParser.json());
 app.use(fileUpload());
 
@@ -42,29 +42,29 @@ app.use('/audit', verify, AuditTrailRoute)
 app.use('/dashboard', verify, DashBoardRoute)
 app.use('/setting', verify, Settings)
 app.use('/', Auth)
-//
-// app.post('/upload', async (req, res) => {
-//
-//     if (req.files === null) {
-//         return res.status(400).json({msg: 'No file Uploaded'})
-//     }
-//
-//     const file = req.files.picture
-//
-//     file.mv(`${__dirname}/uploads/image/${file.name}`, err => {
-//         if (err) {
-//             console.log(err)
-//             return res.status(500).send(err)
-//         }
-//     })
-//
-//
-//     res.send(`Hello World`)
-// })
+
+app.post('/upload', async (req, res) => {
+
+    if (req.files === null) {
+        return res.status(400).json({msg: 'No file Uploaded'})
+    }
+
+    const file = req.files.picture
+
+    file.mv(`${__dirname}/uploads/image/${file.name}`, err => {
+        if (err) {
+            console.log(err)
+            return res.status(500).send(err)
+        }
+    })
+
+
+    res.send(`Hello World`)
+})
 
 
 
-db.sequelize.sync().then(() => {
+// db.sequelize.sync().then(() => {
     app.listen(process.env.PORT || 3001, async () => {
         console.log("i am listening ")
         // const customer = await Customer.findOne({
@@ -144,7 +144,7 @@ db.sequelize.sync().then(() => {
         // }
 
     })
-})
+// })
 
 // app.listen(process.env.PORT || 3001)
 
