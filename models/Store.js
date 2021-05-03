@@ -45,6 +45,24 @@ module.exports = (sequelize, DataTypes) => {
         Store.hasMany(models.AuditTrail, {
             onDelete: 'cascade'
         })
+
+        Store.hasMany(models.TransferProduct, {
+
+            onDelete:'cascade',
+            foreignKey:{
+                name:'To'
+            }
+
+        })
+        Store.hasMany(models.TransferProduct, {
+
+            onDelete:'cascade',
+            foreignKey: {
+                name:'From'
+            }
+        })
+
+
     }
 
 

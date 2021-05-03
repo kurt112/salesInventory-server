@@ -88,8 +88,8 @@ router.post('/find', async (req, res) => {
 
     if (data.length === 0) {
         res.status(400).send({
-            title: 'Store Not Found',
-            message: 'Enter Proper Store Email'
+            title: 'Branch Not Found',
+            message: 'Enter Proper Branch Code'
         })
     } else {
         res.send(data)

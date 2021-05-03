@@ -1,4 +1,4 @@
-module.exports = (sequelize, DataTypes) => {    
+module.exports = (sequelize, DataTypes) => {
     const User = sequelize.define("User", {
         email: {
             type: DataTypes.STRING,
@@ -57,6 +57,13 @@ module.exports = (sequelize, DataTypes) => {
         User.belongsTo(models.Store,{
             foreignKey:{
                 allowNull: false
+            }
+        })
+
+        User.hasMany(models.TransferProduct, {
+            onDelete: 'cascade',
+            foreignKey:{
+                name: 'ArrangeBy'
             }
         })
 
