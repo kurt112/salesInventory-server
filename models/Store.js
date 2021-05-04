@@ -62,6 +62,9 @@ module.exports = (sequelize, DataTypes) => {
             }
         })
 
+        Store.hasMany(models.Sales, {
+            onDelete: 'cascade'
+        })
 
     }
 

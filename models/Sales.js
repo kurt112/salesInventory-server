@@ -16,6 +16,12 @@ module.exports = (sequelize) => {
             }
         })
 
+        Sales.belongsTo(models.Store, {
+            foreignKey: {
+                allowNull: false
+            }
+        })
+
     }
 
 

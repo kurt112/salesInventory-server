@@ -7,10 +7,8 @@ const {Product, Supplier, Store, ProductType, Setting, AuditTrail} = require('..
 const verify = require('../utils/jwt')
 const Insert=  require('../utils/InsertAuditTrail')
 router.post('/insert', verify, async (req, res) => {
-
     let qty = req.body.qty
     const user = req.user.user
-
     while (qty !== 0) {
         await Product.create(req.body).catch(err => {
             if (err) {
@@ -28,7 +26,7 @@ router.post('/insert', verify, async (req, res) => {
 })
 
 router.post('/update', verify, async (req, res) => {
-    const branch = parseInt(req.query.branch)
+
     const user = req.user.user
     const {
         brand,
@@ -55,7 +53,7 @@ router.post('/update', verify, async (req, res) => {
 
     const filterData = {
         status: 'Available',
-        StoreID: req.query.branch,
+        StoreID: user.StoreId,
         code: oldCode
     }
 
@@ -100,7 +98,7 @@ router.get('/list', verify, (req, res) => {
         ],
         where: data
     }).then((product) => {
-        res.send(product)
+        res.send(product.reverse())
     }).catch((error) => {
         console.log(error);
     })
@@ -235,18 +233,16 @@ router.post("/transfer", verify, async (req, res) => {
 })
 
 router.post('/find', verify, async (req, res) => {
-
-    const {code,branch} = req.body
-
-    console.log(req.body)
+    const user = req.user.user
+    const {code} = req.body
 
     const filterData = {
         status: 'Available',
-        StoreID: branch,
+        StoreID: user.StoreId,
         code
     }
 
-    if (branch === 0) {
+    if (user.StoreId === 0) {
         delete filterData.StoreID
     }
 
@@ -256,6 +252,27 @@ router.post('/find', verify, async (req, res) => {
             {model: ProductType}
         ],
         where: filterData
+    })
+
+    if (data.length === 0) {
+        res.status(400).send({
+            title: 'Product Not Found',
+            message: 'User Barcode to find product'
+        })
+    } else {
+        res.send(data)
+    }
+})
+
+router.get('/findById',  async (req,res) => {
+    const {id} = req.body
+
+    const data = await Product.findOne({
+        limit: 1,
+        include: [
+            {model: ProductType}
+        ],
+        where: id
     })
 
     if (data.length === 0) {

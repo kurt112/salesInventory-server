@@ -22,7 +22,8 @@ router.post('/insert', async (req, res) => {
         while (qty !== 0) {
             await Sales.create({
                 TransactionId: transaction.id,
-                ProductId: item[i].id
+                ProductId: item[i].id,
+                StoreId: user.StoreId
             }).then(ignored => {
                 Product.update(
                     {status: 'Sold'},

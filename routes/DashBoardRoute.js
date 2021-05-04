@@ -36,8 +36,11 @@ router.get('/data', async (req, res) => {
         .then((store) => store)
         .catch((error) => console.log(error))
 
-    const products = await Product.findAndCountAll()
-        .then((product) => product)
+    const products = await Product.findAndCountAll({
+        where: {
+            status: 'Available'
+        }
+    }).then((product) => product)
         .catch((error) => console.log(error))
 
     const data = {
@@ -56,7 +59,7 @@ router.get('/data', async (req, res) => {
 router.get('/audit', async (req, res) => {
 
 
-    const startDate = moment().format('YYYY-MM-DD 00:00')
+        const startDate = moment().format('YYYY-MM-DD 00:00')
     const endDate = moment().format('YYYY-MM-DD 23:59')
 
     await AuditTrail.findAll({

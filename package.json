@@ -11,7 +11,11 @@
   "keywords": [
     "sales-inventory-server"
   ],
-  "author": "",
+  "author": {
+    "email": "kurtorioque112@gmail.com",
+    "name": "Kurt Lupin Orioque",
+    "url": "https://kurtorioque.tech/"
+  },
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.19.0",
