@@ -8,8 +8,7 @@ router.post('/insert', async (req, res) => {
 
     req.body.password = await EncryptPassword(req.body.password)
 
-    console.log(req.body)
-    await User.create(req.body).then(e => {
+    await User.create(req.body).then(ignored => {
         Insert(user.StoreId,user.id,
             ' Created User With The Email Of ' + user.email + ' In Branch ' + user.Store.location,0)
 
@@ -97,6 +96,13 @@ router.post('/find', async (req,res) => {
 
 router.post('/update', async (req, res) => {
     const users = req.user.user
+    const pass = req.body.password.split('$').length
+    if(pass >=4){
+        delete req.body.password
+    }else{
+        req.body.password = await EncryptPassword(req.body.password)
+    }
+
     try {
         const result = await User.update(req.body,
             {
@@ -117,6 +123,7 @@ router.post('/update', async (req, res) => {
             message: `Can't update User`
         })
     }
+    res.send('ok')
 })
 
 
