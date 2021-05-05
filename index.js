@@ -120,7 +120,7 @@ db.sequelize.sync().then(() => {
         if (!user) {
             try {
                 await User.create({
-                    email: 'owner',
+                    email: 'owner@gmail.com',
                     password,
                     firstName: 'owner',
                     lastName: 'lastName',

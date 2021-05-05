@@ -1,7 +1,7 @@
 const express = require('express')
 let router = express.Router()
 const {Transaction, Customer, Store, User, Product, Sales} = require('../models')
-const Insert=  require('../utils/InsertAuditTrail')
+const Insert = require('../utils/InsertAuditTrail')
 router.post('/insert', async (req, res) => {
     const user = req.user.user
     const item = req.body.items
@@ -13,8 +13,8 @@ router.post('/insert', async (req, res) => {
         }
     })
 
-    Insert(user.StoreId,user.id,
-        ' Created Transaction With The Code Of ' + transaction.code + ' With The Total Of ₱ ' + transaction.amount + ' In Branch ' + user.Store.location,transaction.amount)
+    Insert(user.StoreId, user.id,
+        ' Created Transaction With The Code Of ' + transaction.code + ' With The Total Of ₱ ' + transaction.amount + ' In Branch ' + user.Store.location, transaction.amount)
 
     for (let i = 0; i < item.length; i++) {
         let qty = item[i].qty
@@ -55,7 +55,7 @@ router.get('/list', (req, res) => {
     })
 })
 
-router.post('/find', async (req,res) => {
+router.post('/find', async (req, res) => {
 
     const {code} = req.body
 
@@ -69,8 +69,7 @@ router.post('/find', async (req,res) => {
     })
 
 
-
-    if(transaction.length === 0){
+    if (transaction === null) {
         return res.status(400).send({
             title: 'Transaction Not Found',
             message: 'Enter Proper Transaction Code'
@@ -81,7 +80,7 @@ router.post('/find', async (req,res) => {
         include: [
             {model: Product}
         ],
-        where:{TransactionId: transaction.id}
+        where: {TransactionId: transaction.id}
     })
 
     const data = {
@@ -91,6 +90,31 @@ router.post('/find', async (req,res) => {
 
 
     res.send(data)
+})
+
+router.post('/returnItem', async (req, res) => {
+    const {ProductId, TransactionId,code,reason} = req.body
+    const user = req.user.user
+
+    await Sales.destroy({
+        where: {
+            TransactionId,
+            ProductId
+        },
+        limit: 1
+    })
+
+    await Product.destroy({
+        where: {
+            id: ProductId
+        }
+    })
+
+    Insert(user.StoreId, user.id,
+        'Returned Product In Transaction With The Code Of ' + code + ' With The Reason Of ' + reason + ' In Branch ' + user.Store.location, 0)
+
+
+    res.send('nice')
 })
 
 
