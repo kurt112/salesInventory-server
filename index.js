@@ -31,6 +31,7 @@ const DashBoardRoute = require('./routes/DashBoardRoute')
 const Auth = require('./routes/Authentication')
 const Settings = require('./routes/SettingsRoute')
 const Transfer = require('./routes/TransferRoute')
+const ResetPassword = require('./routes/PasswordReset')
 const EncryptPassword = require("./utils/HashedPassword");
 
 // route implementation
@@ -45,6 +46,7 @@ app.use('/audit', verify, AuditTrailRoute)
 app.use('/dashboard', verify, DashBoardRoute)
 app.use('/setting', verify, Settings)
 app.use('/transfer', verify, Transfer)
+app.use('/resetPassword',ResetPassword)
 app.use('/', Auth)
 
 app.post('/upload', async (req, res) => {
