@@ -34,7 +34,14 @@ router.post('/find', async (req, res) => {
     await Customer.findOne({
         where: {email}
     }).then(e => {
-        res.send(e)
+      if(e === null){
+          res.status(400).send({
+              title: 'Customer Not Found',
+              message: 'Please Input A Existing Customer'
+          })
+      }else{
+          res.send(e)
+      }
     }).catch(error => {
         console.log(error)
         res.status(404).send(error)
