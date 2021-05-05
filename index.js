@@ -31,6 +31,7 @@ const DashBoardRoute = require('./routes/DashBoardRoute')
 const Auth = require('./routes/Authentication')
 const Settings = require('./routes/SettingsRoute')
 const Transfer = require('./routes/TransferRoute')
+const EncryptPassword = require("./utils/HashedPassword");
 
 // route implementation
 app.use('/product', ProductRoute)
@@ -98,7 +99,7 @@ db.sequelize.sync().then(() => {
         if (!store) {
             try {
                 await Store.create({
-                    code: 'jard-main-location',
+                    code: 'jars-main-location',
                     location: 'San Pablo',
                     email: 'owner@gmail.com',
                     postalCode: '1850',
@@ -114,12 +115,13 @@ db.sequelize.sync().then(() => {
         const user = await User.findOne({
             where: {id: 1}
         })
+        const password =await EncryptPassword("jars")
 
         if (!user) {
             try {
                 await User.create({
                     email: 'owner',
-                    password: 'jars',
+                    password,
                     firstName: 'owner',
                     lastName: 'lastName',
                     role: 3,

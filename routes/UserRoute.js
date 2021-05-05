@@ -2,13 +2,17 @@ const express = require('express')
 let router = express.Router()
 const {User, Store} = require('../models')
 const Insert=  require('../utils/InsertAuditTrail')
+const EncryptPassword = require("../utils/HashedPassword");
 router.post('/insert', async (req, res) => {
     const user = req.user.user
+
+    req.body.password = await EncryptPassword(req.body.password)
+
+    console.log(req.body)
     await User.create(req.body).then(e => {
         Insert(user.StoreId,user.id,
             ' Created User With The Email Of ' + user.email + ' In Branch ' + user.Store.location,0)
 
-        res.send(e)
     }).catch(ignored => {
         res.status(400).send({
             title: 'Email Should be unique',
@@ -36,6 +40,12 @@ router.get('/list',(req, res) => {
 router.post('/delete', async (req, res) => {
     const users = req.user.user
     let error;
+    if(req.body.email === 'owner'){
+       return res.status(400).send({
+            title: `Can't Delete Owner`,
+            message: `Can't Delete This User`
+        })
+    }
     try {
         const user = await User.destroy({
             where: {
