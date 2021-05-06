@@ -17,6 +17,25 @@ router.post('/insert',async (req, res) => {
     res.send(customer)
 })
 
+router.post('/update', async (req,res) => {
+    const user = req.user.user
+
+    await Customer.update(req.body, {
+        where: {id: req.body.id}
+    }).then(e => {
+        console.log(e)
+        Insert(user.StoreId,user.id,
+            ' Updated Customer With The Email Of ' + req.body.email + user.Store.location,0)
+        res.send(e)
+    }).catch(ignored => {
+        res.status(400).send({
+            title: 'Email Should be unique',
+            message: 'Customer email is existing'
+
+        })
+    })
+})
+
 
 router.get('/list', async (req, res) => {
     await Customer.findAll({
@@ -27,6 +46,8 @@ router.get('/list', async (req, res) => {
         console.log(error);
     })
 })
+
+
 
 router.post('/find', async (req, res) => {
     const {email} = req.body
@@ -50,10 +71,6 @@ router.post('/find', async (req, res) => {
 })
 
 
-router.get('/delete', (req, res) => {
-    Customer.destroy({where: {id: 1}})
-    res.send()
-})
 
 
 module.exports = router

@@ -17,6 +17,12 @@ module.exports = (sequelize, DataTypes) => {
                 msg: 'Email address already in use!'
             }
         },
+        contactPerson: {
+          type: DataTypes.STRING,
+          validate: {
+              notEmpty: true
+          }
+        },
         address: {
             type: DataTypes.STRING
         },
@@ -42,7 +48,12 @@ module.exports = (sequelize, DataTypes) => {
         Supplier.hasMany(models.Product, {
             onDelete: 'cascade'
         })
+
+        Supplier.hasMany(models.SupplierReceipt, {
+            onDelete: 'cascade'
+        })
     }
+
 
     return Supplier
 }

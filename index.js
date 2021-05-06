@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const fileUpload = require('express-fileupload')
 const app = express()
 const verify = require('./utils/jwt')
-const {User, Store,Customer,Setting} = require('./models')
+const {User, Store,Customer,Setting,SupplierReceipt} = require('./models')
 const PORT = process.env.PORT || 3001;
 // setting up cors
 app.use(cors(
@@ -32,7 +32,8 @@ const Auth = require('./routes/Authentication')
 const Settings = require('./routes/SettingsRoute')
 const Transfer = require('./routes/TransferRoute')
 const ResetPassword = require('./routes/PasswordReset')
-const EncryptPassword = require("./utils/HashedPassword");
+const EncryptPassword = require("./utils/HashedPassword")
+const SupplierReceipts = require('./routes/SupplierReceiptRoute')
 
 // route implementation
 app.use('/product', ProductRoute)
@@ -47,6 +48,7 @@ app.use('/dashboard', verify, DashBoardRoute)
 app.use('/setting', verify, Settings)
 app.use('/transfer', verify, Transfer)
 app.use('/resetPassword',ResetPassword)
+app.use('/supplierReceipt',SupplierReceipts)
 app.use('/', Auth)
 
 app.post('/upload', async (req, res) => {
@@ -57,6 +59,9 @@ app.post('/upload', async (req, res) => {
 
     const file = req.files.picture
 
+    console.log(file)
+
+
     file.mv(`${__dirname}/uploads/image/${file.name}`, err => {
         if (err) {
             console.log(err)
@@ -66,6 +71,38 @@ app.post('/upload', async (req, res) => {
 
 
     res.send(`Hello World`)
+})
+
+app.post('/supplierReceipt/create', verify, async (req, res) => {
+
+    if (req.files === null) {
+        return res.status(400).json({msg: 'No file Uploaded'})
+    }
+    const file = req.files.picture
+    const {code, SupplierId, description} = req.body
+
+    const data = {
+        code,
+        SupplierId,
+        description,
+        image: file.name
+    }
+    await SupplierReceipt.create(data, {}).then(ignored => {
+        file.mv(`${__dirname}/uploads/receipts/${file.name}`, err => {
+            if (err) {
+                return res.status(500).send(err)
+            } else {
+                res.send('ok')
+            }
+        })
+    }).catch(ignored => {
+        res.status(400).send({
+            title: 'Receipt Image Error',
+            message: 'Receipt Image Is Existing In Database'
+        })
+    })
+
+
 })
 
 
