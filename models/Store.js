@@ -16,6 +16,10 @@ module.exports = (sequelize, DataTypes) => {
                 msg: 'Email Already Exist'
             }
         },
+        requesting:{
+            type:DataTypes.INTEGER,
+            defaultValue: 0
+        },
         postalCode: {
             type: DataTypes.INTEGER
         },

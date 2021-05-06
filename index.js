@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const fileUpload = require('express-fileupload')
 const app = express()
 const verify = require('./utils/jwt')
-const {User, Store,Customer,Setting,SupplierReceipt} = require('./models')
+const {User, Store,Customer,Setting,SupplierReceipt, ProductType} = require('./models')
 const PORT = process.env.PORT || 3001;
 // setting up cors
 app.use(cors(
@@ -110,6 +110,17 @@ app.post('/supplierReceipt/create', verify, async (req, res) => {
 db.sequelize.sync().then(() => {
     app.listen(PORT, async () => {
         console.log("i am listening ")
+
+        const productType = await ProductType.findOne({
+            where: {id:1}
+        })
+
+        if(!productType){
+            await ProductType.create({
+                name: 'Cellphone'
+            })
+        }
+
         const customer = await Customer.findOne({
             where: {id: 1}
         })

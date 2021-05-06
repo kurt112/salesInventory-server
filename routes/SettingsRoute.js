@@ -1,8 +1,8 @@
 const express = require('express')
 let router = express.Router()
-const {Setting, ProductType,Product,Store,Supplier} = require('../models')
+const {Setting, ProductType, Product, Store, Supplier} = require('../models')
 
-const Insert=  require('../utils/InsertAuditTrail')
+const Insert = require('../utils/InsertAuditTrail')
 const {Sequelize} = require("sequelize");
 
 router.post('/insertProductType', async (req, res) => {
@@ -14,8 +14,8 @@ router.post('/insertProductType', async (req, res) => {
         res.status(404)
     })
 
-    Insert(user.StoreId,user.id,
-        'Added Product Type ' + name + ' In Branch ' + user.Store.location,0)
+    Insert(user.StoreId, user.id,
+        'Added Product Type ' + name + ' In Branch ' + user.Store.location, 0)
 
 
     res.send(productType)
@@ -33,6 +33,16 @@ router.post('/deleteProductType', async (req, res) => {
     const user = req.user.user
     const {name} = req.body
     let error = false
+
+    const productType = await ProductType.findOne({
+        where: {name}
+    })
+
+    if (productType.id === 1) {
+        return res.status(404).send({message: "Can't Delete This Item"})
+    }
+
+
     await ProductType.destroy({
         where: {name}
     }).catch(ignored => {
@@ -42,8 +52,8 @@ router.post('/deleteProductType', async (req, res) => {
     if (error) {
         res.status(404).send({message: "Can't Delete This Item"})
     } else {
-        Insert(user.StoreId,user.id,
-            'Delete Product Type ' + name + ' In Branch ' + user.Store.location,0)
+        Insert(user.StoreId, user.id,
+            'Delete Product Type ' + name + ' In Branch ' + user.Store.location, 0)
         res.send({message: 'Deleted Success'})
     }
 })
@@ -59,8 +69,8 @@ router.post('/setCriticalStock', async (req, res) => {
         where: {id: 1}
     })
 
-    Insert(user.StoreId,user.id,
-        ' Set Critical Product Quantity To ' + value + ' In Branch ' + user.Store.location,0)
+    Insert(user.StoreId, user.id,
+        ' Set Critical Product Quantity To ' + value + ' In Branch ' + user.Store.location, 0)
     res.send({message: 'Update Critical Stock Success'})
 })
 

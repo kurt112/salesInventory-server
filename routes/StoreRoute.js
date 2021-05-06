@@ -22,6 +22,16 @@ router.get('/list', (req, res) => {
     })
 })
 
+router.get('/requesting', (req, res) => {
+    Store.findAll({
+        where: {requesting: 1}
+    }).then((stores) => {
+        res.send(stores)
+    }).catch((error) => {
+        console.log(error);
+    })
+})
+
 
 router.post('/update', async (req, res) => {
     const {code} = req.body
@@ -72,6 +82,31 @@ router.post('/delete', async (req, res) => {
         })
     } else res.send("Branch Deleted Success")
 
+
+})
+
+router.post('/createRequest', async (req,res) => {
+    const user = req.user.user
+
+    const store = await Store.findOne({
+        where: {
+            id: user.StoreId
+        }
+    })
+
+
+    if(store.requesting === 1){
+       return res.status(404).send('Store Has A Already Request')
+    }
+
+    await Store.update({requesting: 1},{
+        where: {
+            id: user.StoreId
+        }
+    })
+    Insert(user.StoreId,user.id,
+        ' Created Request Stock In Branch ' + user.Store.location,0)
+    res.send("Store Request Created Success")
 
 })
 

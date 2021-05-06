@@ -1,7 +1,7 @@
 const express = require('express')
 const {Sequelize} = require("sequelize");
 let router = express.Router()
-const {TransferProduct, Store, User, Product} = require('../models')
+const {TransferProduct, Store, Product} = require('../models')
 const Insert = require('../utils/InsertAuditTrail')
 
 router.post('/product', async (req, res) => {
@@ -53,6 +53,14 @@ router.post('/receive', async (req, res) => {
             message: `Please Input Proper Code For Your Branch`
         })
     }
+    await Store.update({requesting: 0}, {
+        where: {id: user.StoreId}
+    }).then(ignored => {
+        Insert(user.StoreId, user.id,
+            'Store Request Stock Fulfilled In Branch ' + user.Store.location, 0)
+    }).catch(ignored => {
+
+    })
 
     await TransferProduct.update(
         {status: 1}, {
@@ -98,7 +106,7 @@ router.get('/receiveList', async (req, res) => {
 
         where: {
             status: 1,
-            to:user.StoreId// user.Store.id
+            to: user.StoreId// user.Store.id
         }
     }).then(e => {
         res.send(e.reverse())
