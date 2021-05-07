@@ -1,6 +1,6 @@
 const express = require('express')
 let router = express.Router()
-const {Setting, ProductType, Product, Store, Supplier} = require('../models')
+const {Setting, ProductType, Product, Store} = require('../models')
 
 const Insert = require('../utils/InsertAuditTrail')
 const {Sequelize} = require("sequelize");
@@ -136,11 +136,8 @@ router.get('/getCriticalStockProduct', async (req, res) => {
                 limit: currentCriticalStockNumber + 1
             }).then(e => {
 
-                // kunin natin unang data
                 if (e.length <= currentCriticalStockNumber) {
                     if (e[0] === undefined) {
-                        // console.log('i am here')
-                        // console.log(e.length + " The store " + stores[i])
                         const getData = async () => {
 
                             let product = await Product.findOne({
