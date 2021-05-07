@@ -93,11 +93,14 @@ router.get('/getCriticalStockProduct', async (req, res) => {
     const criticalStock = []
     const codes = []
 
+    console.log("i am here")
     await Store.findAll({}).then(e => {
         e.map((i) => {
             stores.push(i.dataValues.id)
         })
     })
+
+    console.log(stores)
 
     const data = await Product.findAndCountAll({
         attributes: [Sequelize.fn('DISTINCT', Sequelize.col('code')), 'code'],
@@ -128,9 +131,12 @@ router.get('/getCriticalStockProduct', async (req, res) => {
                 },
                 limit: currentCriticalStockNumber + 1
             }).then(e => {
+                console.log(stores[i])
                 if (e.length <= currentCriticalStockNumber) {
+                    console.log(e)
                     if (e[0] === undefined) {
                         const getData = async () => {
+
                             let product = await Product.findOne({
                                 where: {
                                     code: codes[j],
@@ -144,13 +150,15 @@ router.get('/getCriticalStockProduct', async (req, res) => {
                             product.StoreId = stores[i]
                             product["Store"] = newStore
 
+
+
                             criticalStock.push({
                                 product,
                                 branch: newStore
                             })
                         }
-                        getData().then(ignored => {
-                        })
+                        getData().then(ignored => {})
+
                     } else {
                         const getData = async () => {
 
@@ -164,13 +172,17 @@ router.get('/getCriticalStockProduct', async (req, res) => {
                             })
 
                         }
-                        getData().then(ignored => {
-                        })
+                        getData().then(ignored => {})
+
                     }
                 }
             })
         }
     }
+
+    console.log("sdf")
+
+    console.log(criticalStock)
 
 
     res.send(criticalStock)

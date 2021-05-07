@@ -18,11 +18,23 @@ router.get('/insert', async (req, res) => {
 })
 
 router.get('/list', (req, res) => {
+    const user = req.user.user
+    console.log(user)
+
+    const data = {
+        StoreId: user.StoreId
+    }
+
+    if(user.role === 3){
+        delete data.StoreId
+    }
+
     AuditTrail.findAll({
         include: [
             {model: User},
             {model: Store},
         ],
+        where: data
     }).then((supplier) => {
         res.send(supplier.reverse())
     }).catch((error) => {

@@ -6,6 +6,7 @@ const fs = require('fs');
 const {Product, Supplier, Store, ProductType} = require('../models')
 const verify = require('../utils/jwt')
 const Insert=  require('../utils/InsertAuditTrail')
+
 router.post('/insert', verify, async (req, res) => {
     let qty = req.body.qty
     const user = req.user.user
@@ -57,7 +58,7 @@ router.post('/update', verify, async (req, res) => {
         code: oldCode
     }
 
-    if (branch === 0) {
+    if (user.role === 3) {
         delete filterData.StoreID
     }
 

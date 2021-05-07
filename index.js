@@ -7,6 +7,7 @@ const app = express()
 const verify = require('./utils/jwt')
 const {User, Store,Customer,Setting,SupplierReceipt, ProductType} = require('./models')
 const PORT = process.env.PORT || 3001;
+
 // setting up cors
 app.use(cors(
     {

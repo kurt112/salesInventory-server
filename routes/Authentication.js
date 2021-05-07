@@ -14,7 +14,6 @@ router.use(bodyParser.json());
 router.post('/login', async (req, res) => {
     const {username, password} = req.body
 
-    const hashesPassword = await EncryptPassword(password.toString())
 
     const user = await User.findOne({
         include: [

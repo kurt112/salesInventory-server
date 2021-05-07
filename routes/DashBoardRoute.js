@@ -57,19 +57,24 @@ router.get('/data', async (req, res) => {
 
 
 router.get('/audit', async (req, res) => {
-
-
-        const startDate = moment().format('YYYY-MM-DD 00:00')
+    const user = req.user.user
+    const startDate = moment().format('YYYY-MM-DD 00:00')
     const endDate = moment().format('YYYY-MM-DD 23:59')
+    const data = {
+        StoreId: user.StoreId,
+        "createdAt": {[Op.between]: [startDate, endDate]},
+    }
+
+    if(user.role === 3){
+        delete data.StoreId
+    }
 
     await AuditTrail.findAll({
         include: [
             {model: User},
             {model: Store}
         ],
-        where: {
-            "createdAt": {[Op.between]: [startDate, endDate]},
-        },
+        where: data
 
     }).then(recent => {
         res.send(recent)
@@ -124,8 +129,6 @@ router.get('/topTenSales', async (req, res) => {
         console.log(error)
     })
 
-    console.log(mapCount)
-    console.log(productMap)
 
     const to_return = []
     for (let product of mapCount.keys()) {
