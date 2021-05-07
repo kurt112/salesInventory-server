@@ -93,14 +93,15 @@ router.get('/getCriticalStockProduct', async (req, res) => {
     const criticalStock = []
     const codes = []
 
-    console.log("i am here")
     await Store.findAll({}).then(e => {
         e.map((i) => {
             stores.push(i.dataValues.id)
         })
     })
 
-    console.log(stores)
+
+    // console.log('i am here')
+    // console.log(stores)
 
     const data = await Product.findAndCountAll({
         attributes: [Sequelize.fn('DISTINCT', Sequelize.col('code')), 'code'],
@@ -113,9 +114,12 @@ router.get('/getCriticalStockProduct', async (req, res) => {
         .then(e => e)
         .catch(error => console.log(error))
 
+
     for (let i = 0; i < data.rows.length; i++) {
         codes.push(data.rows[i].code)
     }
+
+    // console.log(codes)
 
 
     for (let i = 0; i < stores.length; i++) {
@@ -131,10 +135,12 @@ router.get('/getCriticalStockProduct', async (req, res) => {
                 },
                 limit: currentCriticalStockNumber + 1
             }).then(e => {
-                console.log(stores[i])
+
+                // kunin natin unang data
                 if (e.length <= currentCriticalStockNumber) {
-                    console.log(e)
                     if (e[0] === undefined) {
+                        // console.log('i am here')
+                        // console.log(e.length + " The store " + stores[i])
                         const getData = async () => {
 
                             let product = await Product.findOne({
@@ -151,15 +157,19 @@ router.get('/getCriticalStockProduct', async (req, res) => {
                             product["Store"] = newStore
 
 
-
-                            criticalStock.push({
+                            await criticalStock.push({
                                 product,
                                 branch: newStore
                             })
+
+                            console.log(criticalStock.length)
                         }
-                        getData().then(ignored => {})
+
+                        getData().then(ignored => {
+                        })
 
                     } else {
+
                         const getData = async () => {
 
                             let newStore = await Store.findOne({
@@ -172,21 +182,16 @@ router.get('/getCriticalStockProduct', async (req, res) => {
                             })
 
                         }
-                        getData().then(ignored => {})
+                        getData().then(ignored => {
+                        })
 
                     }
                 }
             })
         }
     }
-
-    console.log("sdf")
-
-    console.log(criticalStock)
-
-
+    await new Promise(r => setTimeout(r, 5000));
     res.send(criticalStock)
-
 })
 
 
