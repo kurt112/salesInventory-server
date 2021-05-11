@@ -3,6 +3,7 @@ let router = express.Router()
 const {User, Store} = require('../models')
 const Insert=  require('../utils/InsertAuditTrail')
 const EncryptPassword = require("../utils/HashedPassword");
+const {Op} = require('sequelize');
 router.post('/insert', async (req, res) => {
     const user = req.user.user
 
@@ -23,10 +24,34 @@ router.post('/insert', async (req, res) => {
 })
 
 router.get('/list',(req, res) => {
-    User.findAll({
+    const user = req.user.user
+
+    let {page,size,search} = req.query
+
+    size = size === undefined? 20: size
+    page = page === undefined? 0: page
+    search = search === undefined? '': search
+    const data = {
+        StoreId: user.StoreId,
+        [Op.or]: [
+            {email: { [Op.like]: '%' + search + '%' }},
+            {firstName: { [Op.like]: '%' + search + '%' }},
+            {lastName: { [Op.like]: '%' + search + '%' }},
+            {'$Store.location$': { [Op.like]: '%' + search + '%' }}
+        ]
+    }
+
+    if(user.role===3){
+        delete data.StoreId
+    }
+
+    User.findAndCountAll({
+        limit: parseInt(size),
+        offset: parseInt(page)*parseInt(size),
         include: [
             {model: Store}
-        ]
+        ],
+        where: data
 
     }).then((user) => {
         res.send(user)

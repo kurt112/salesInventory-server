@@ -86,9 +86,7 @@ router.get('/list', verify, (req, res) => {
     const branch = parseInt(req.query.branch)
     const status = req.query.status
     let {page,size,search} = req.query
-    console.log(req.query)
-    console.log(search)
-    console.log(size)
+
     size = size === undefined? 20: size
     page = page === undefined? 0: page
     search = search === undefined? '': search
