@@ -6,6 +6,7 @@ const fs = require('fs');
 const {Product, Supplier, Store, ProductType} = require('../models')
 const verify = require('../utils/jwt')
 const Insert=  require('../utils/InsertAuditTrail')
+const {Op} = require('sequelize');
 
 router.post('/insert', verify, async (req, res) => {
     let qty = req.body.qty
@@ -84,16 +85,27 @@ router.get('/list', verify, (req, res) => {
 
     const branch = parseInt(req.query.branch)
     const status = req.query.status
+    const {page,size,search} = req.query
+
     const data = {
         status: status,
-        StoreID: req.query.branch
+        StoreID: req.query.branch,
+        [Op.or]: [
+            {code: { [Op.like]: '%' + search + '%' }},
+            {brand: { [Op.like]: '%' + search + '%' }},
+            {name: { [Op.like]: '%' + search + '%' }},
+            {'$ProductType.name$': { [Op.like]: '%' + search + '%' }},
+            {'$Supplier.name$': { [Op.like]: '%' + search + '%' }}
+        ]
     }
 
     if (branch === 0) {
         delete data.StoreID
     }
 
-    Product.findAll({
+    Product.findAndCountAll({
+        limit: parseInt(size),
+        offset: parseInt(page)*parseInt(size),
         include: [
             {model: Supplier},
             {model: Store},
@@ -101,7 +113,7 @@ router.get('/list', verify, (req, res) => {
         ],
         where: data
     }).then((product) => {
-        res.send(product.reverse())
+        res.send(product)
     }).catch((error) => {
         console.log(error);
     })
