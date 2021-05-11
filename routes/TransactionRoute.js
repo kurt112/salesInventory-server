@@ -20,18 +20,26 @@ router.post('/insert', async (req, res) => {
         let qty = item[i].qty
 
         while (qty !== 0) {
+            const product = await Product.findOne({
+                where: {
+                    code: item[i].code,
+                    status: 'Available'
+                }
+            })
+
             await Sales.create({
                 TransactionId: transaction.id,
-                ProductId: item[i].id,
+                ProductId: product.id,
                 StoreId: user.StoreId
-            }).then(ignored => {
-                Product.update(
-                    {status: 'Sold'},
-                    {where: {id: item[i].id}}
-                )
             }).catch(error => {
                 console.log(error)
             })
+
+
+            await Product.update(
+                {status: 'Sold'},
+                {where: {id: product.id}}
+            )
             qty--
         }
     }
@@ -93,7 +101,7 @@ router.post('/find', async (req, res) => {
 })
 
 router.post('/returnItem', async (req, res) => {
-    const {ProductId, TransactionId,code,reason} = req.body
+    const {ProductId, TransactionId, code, reason} = req.body
     const user = req.user.user
 
     await Sales.destroy({
