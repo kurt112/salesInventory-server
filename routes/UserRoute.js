@@ -31,6 +31,7 @@ router.get('/list',(req, res) => {
     size = size === undefined? 20: size
     page = page === undefined? 0: page
     search = search === undefined? '': search
+
     const data = {
         StoreId: user.StoreId,
         [Op.or]: [

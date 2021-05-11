@@ -93,7 +93,7 @@ router.get('/list', verify, (req, res) => {
 
     const data = {
         status: status,
-        StoreID: req.query.branch,
+        StoreID: branch,
         [Op.or]: [
             {code: { [Op.like]: '%' + search + '%' }},
             {brand: { [Op.like]: '%' + search + '%' }},

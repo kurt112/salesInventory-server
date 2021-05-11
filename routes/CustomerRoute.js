@@ -2,6 +2,7 @@ const express = require('express')
 let router = express.Router()
 const {Customer} = require('../models')
 const Insert=  require('../utils/InsertAuditTrail')
+const {Op} = require('sequelize');
 router.post('/insert',async (req, res) => {
     const user = req.user.user
     const customer = await Customer.create(req.body)
@@ -38,8 +39,27 @@ router.post('/update', async (req,res) => {
 
 
 router.get('/list', async (req, res) => {
-    await Customer.findAll({
-        // where: {firstName: "John"}
+
+    let {page,size,search} = req.query
+
+    size = size === undefined? 20: size
+    page = page === undefined? 0: page
+    search = search === undefined? '': search
+    const data = {
+        [Op.or]: [
+            {name: { [Op.like]: '%' + search + '%' }},
+            {email: { [Op.like]: '%' + search + '%' }},
+            {address: { [Op.like]: '%' + search + '%' }},
+            {city: { [Op.like]: '%' + search + '%' }},
+            {mobile_no: { [Op.like]: '%' + search + '%' }},
+            {tel_no: { [Op.like]: '%' + search + '%' }},
+        ]
+    }
+
+    await Customer.findAndCountAll({
+        limit: parseInt(size),
+        offset: parseInt(page)*parseInt(size),
+        where: data
     }).then((supplier) => {
         res.send(supplier)
     }).catch((error) => {

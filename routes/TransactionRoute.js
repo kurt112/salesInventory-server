@@ -2,6 +2,7 @@ const express = require('express')
 let router = express.Router()
 const {Transaction, Customer, Store, User, Product, Sales} = require('../models')
 const Insert = require('../utils/InsertAuditTrail')
+const {Op} = require("sequelize");
 router.post('/insert', async (req, res) => {
     const user = req.user.user
     const item = req.body.items
@@ -49,13 +50,36 @@ router.post('/insert', async (req, res) => {
 })
 
 router.get('/list', (req, res) => {
+    const branch = parseInt(req.query.branch)
+    let {page,size,search} = req.query
+
+    size = size === undefined? 20: size
+    page = page === undefined? 0: page
+    search = search === undefined? '': search
+    const data = {
+        StoreId: branch,
+        [Op.or]: [
+            {code: { [Op.like]: '%' + search + '%' }},
+            {'$Customer.name$': { [Op.like]: '%' + search + '%' }},
+            {'$User.email$': {[Op.like]: '%' + search + '%'}}
+        ]
+    }
+
+    console.log(branch)
+    if (branch === 0) {
+        delete data.StoreId
+    }
+
+
     Transaction.findAll({
+        limit: parseInt(size),
+        offset: parseInt(page)*parseInt(size),
         include: [
             {model: Store},
             {model: Customer},
             {model: User}
-        ]
-        // where: {firstName: "John"}
+        ],
+        where: data
     }).then((supplier) => {
         res.send(supplier)
     }).catch((error) => {
