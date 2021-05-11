@@ -23,16 +23,22 @@ router.post('/login', async (req, res) => {
             email: username
         }
     }).then(e => e).catch(ignored => {
-        return res.sendStatus(404)
+        return res.status(400).send({
+            title: 'Error Occurred',
+            message: 'Error Undefined Please Contact Admin'
+        })
     })
 
     if (user === null) {
-        return res.sendStatus(404)
+        return res.status(400).send({
+            title: 'Invalid Credentials',
+            message: 'Incorrect Username And Password'
+        })
     }
 
-    const result = await compare(password,user.password)
+    const result = await compare(password, user.password)
 
-    if(result){
+    if (result) {
         const accessToken = jwt.sign({user}, process.env.ACCESS_TOKEN_SECRET)
         Insert(user.StoreId, user.id,
             ' Login In The System In Branch ' + user.Store.location, 0)
@@ -40,7 +46,10 @@ router.post('/login', async (req, res) => {
     }
 
 
-    return res.sendStatus(404)
+    return res.status(400).send({
+        title: 'Invalid Credentials',
+        message: 'Invalid Password'
+    })
 })
 
 router.post('/token', (req, res) => {
