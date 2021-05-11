@@ -3,6 +3,7 @@ const {Sequelize} = require("sequelize");
 let router = express.Router()
 const {TransferProduct, Store, Product} = require('../models')
 const Insert = require('../utils/InsertAuditTrail')
+const {Op} = require("sequelize");
 
 router.post('/product', async (req, res) => {
     const user = req.user.user
@@ -101,15 +102,27 @@ router.post('/receive', async (req, res) => {
 
 router.get('/receiveList', async (req, res) => {
     const user = req.user.user
-    await TransferProduct.findAll({
-        include: {all: true},
+    let {page, size, search} = req.query
 
-        where: {
-            status: 1,
-            to: user.StoreId// user.Store.id
-        }
+    size = size === undefined ? 20 : size
+    page = page === undefined ? 0 : page
+    search = search === undefined ? '' : search
+
+    const data = {
+        status: 1,
+        to: user.StoreId,
+        [Op.or]: [
+            {code: {[Op.like]: '%' + search + '%'}},
+        ]
+    }
+    await TransferProduct.findAndCountAll({
+        limit: parseInt(size),
+        offset: parseInt(page) * parseInt(size),
+        include: {all: true},
+        where: data,
+        order: [ [ 'createdAt', 'DESC' ]],
     }).then(e => {
-        res.send(e.reverse())
+        res.send(e)
     }).catch(data => {
         console.log(data)
         res.status(400).send("Can't Get Data")

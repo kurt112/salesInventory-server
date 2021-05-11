@@ -51,16 +51,17 @@ router.post('/insert', async (req, res) => {
 
 router.get('/list', (req, res) => {
     const branch = parseInt(req.query.branch)
-    let {page,size,search} = req.query
+    let {page, size, search} = req.query
 
-    size = size === undefined? 20: size
-    page = page === undefined? 0: page
-    search = search === undefined? '': search
+    size = size === undefined ? 20 : size
+    page = page === undefined ? 0 : page
+    search = search === undefined ? '' : search
+
     const data = {
         StoreId: branch,
         [Op.or]: [
-            {code: { [Op.like]: '%' + search + '%' }},
-            {'$Customer.name$': { [Op.like]: '%' + search + '%' }},
+            {code: {[Op.like]: '%' + search + '%'}},
+            {'$Customer.name$': {[Op.like]: '%' + search + '%'}},
             {'$User.email$': {[Op.like]: '%' + search + '%'}}
         ]
     }
@@ -71,9 +72,9 @@ router.get('/list', (req, res) => {
     }
 
 
-    Transaction.findAll({
+    Transaction.findAndCountAll({
         limit: parseInt(size),
-        offset: parseInt(page)*parseInt(size),
+        offset: parseInt(page) * parseInt(size),
         include: [
             {model: Store},
             {model: Customer},
@@ -134,7 +135,23 @@ router.post('/returnItem', async (req, res) => {
             ProductId
         },
         limit: 1
+    }).then(e => {
+        console.log(e)
+    }).catch((error) => {
+        console.log(error)
     })
+
+    const sale = await Sales.findOne({
+        where: {
+            TransactionId
+        }
+    })
+
+    if(sale === null){
+        await Transaction.destroy({
+            where:{id: TransactionId}
+        })
+    }
 
     await Product.destroy({
         where: {
