@@ -183,7 +183,7 @@ router.get('/slowPaceProduct', async (req, res) => {
             console.log(error)
         })
     }
-    const to_return = []
+    let to_return = []
 
     const dataProductDate = new Map
 
@@ -214,7 +214,10 @@ router.get('/slowPaceProduct', async (req, res) => {
        to_return.push(data)
     }
 
-    to_return.sort((a, b) => b.date < a.date)
+    to_return = to_return.sort((a, b) => {
+
+        return  new Date(a.date) - new Date(b.date);
+    })
 
     res.send(to_return.splice(0,10))
 })
