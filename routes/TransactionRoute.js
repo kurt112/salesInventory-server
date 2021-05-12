@@ -147,9 +147,31 @@ router.post('/returnItem', async (req, res) => {
         }
     })
 
-    if(sale === null){
+    if (sale === null) {
         await Transaction.destroy({
-            where:{id: TransactionId}
+            where: {id: TransactionId}
+        })
+    } else {
+        const transaction = await Transaction.findOne({
+            where: {
+                id: TransactionId
+            }
+        })
+
+        const product = await Product.findOne({
+            where: {
+                id: ProductId
+            }
+        })
+
+        let newAmount = transaction.amount - product.price
+
+        await Transaction.update({
+            amount: newAmount
+        }, {
+            where: {
+                id: TransactionId
+            }
         })
     }
 
