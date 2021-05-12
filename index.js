@@ -80,14 +80,16 @@ app.post('/supplierReceipt/create', verify, async (req, res) => {
         return res.status(400).json({msg: 'No file Uploaded'})
     }
     const file = req.files.picture
-    const {code, SupplierId, description} = req.body
+    const {code, SupplierId, description,StoreId} = req.body
 
     const data = {
         code,
         SupplierId,
         description,
-        image: file.name
+        image: file.name,
+        StoreId
     }
+
     await SupplierReceipt.create(data, {}).then(ignored => {
         file.mv(`${__dirname}/uploads/receipts/${file.name}`, err => {
             if (err) {

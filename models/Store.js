@@ -41,6 +41,9 @@ module.exports = (sequelize, DataTypes) => {
             onDelete: 'cascade'
         })
 
+        Store.hasMany(models.SupplierReceipt, {
+            onDelete: 'cascade'
+        })
 
         Store.hasMany(models.User, {
             onDelete: 'cascade'

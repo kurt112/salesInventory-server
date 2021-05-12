@@ -34,6 +34,12 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false
             }
         })
+
+        SupplierReceipt.belongsTo(models.Store, {
+            foreignKey: {
+                allowNull: false
+            }
+        })
     }
 
     return SupplierReceipt
