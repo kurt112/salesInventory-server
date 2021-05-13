@@ -35,6 +35,7 @@ const Transfer = require('./routes/TransferRoute')
 const ResetPassword = require('./routes/PasswordReset')
 const EncryptPassword = require("./utils/HashedPassword")
 const SupplierReceipts = require('./routes/SupplierReceiptRoute')
+const CriticalStock = require('./routes/CriticalStockRoute')
 
 // route implementation
 app.use('/product', ProductRoute)
@@ -50,6 +51,7 @@ app.use('/setting', verify, Settings)
 app.use('/transfer', verify, Transfer)
 app.use('/resetPassword',ResetPassword)
 app.use('/supplierReceipt',SupplierReceipts)
+app.use('/critical',verify, CriticalStock)
 app.use('/', Auth)
 
 app.post('/upload', async (req, res) => {
