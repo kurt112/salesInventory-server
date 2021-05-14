@@ -1,7 +1,7 @@
 const express = require('express')
 const {Sequelize} = require("sequelize");
 let router = express.Router()
-const {TransferProduct, Store, Product} = require('../models')
+const {TransferProduct, Store, Product, CriticalStock} = require('../models')
 const Insert = require('../utils/InsertAuditTrail')
 const {Op} = require("sequelize");
 
@@ -10,8 +10,9 @@ router.post('/product', async (req, res) => {
     const {code, From, ArrangeBy, ToId} = req.body
     const products = req.body.products
 
-    console.log(ArrangeBy)
+    const productCode = new Set()
     for (let i = 0; i < products.length; i++) {
+        productCode.add(products[i].code)
         const data = {
             code,
             From: From,
@@ -34,6 +35,47 @@ router.post('/product', async (req, res) => {
         })
     }
 
+    for (let codeSet of productCode) {
+
+        const data = {
+            status: 'Available',
+            StoreId: From,
+            code: codeSet,
+        }
+
+        const criticalStock = await CriticalStock.findOne({
+            where: {
+                StoreId: From,
+                productCode: codeSet
+            }
+        })
+
+        await Product.count({
+            where: data
+        }).then(e => {
+            if (e === 0) {
+                CriticalStock.update({
+                        status: 'Empty'
+                    },
+                    {
+                        where: {
+                            id: criticalStock.id
+                        }
+                    })
+            } else if (e <= criticalStock.critical_level) {
+                CriticalStock.update({
+                        status: 'Warning'
+                    },
+                    {
+                        where: {
+                            id: criticalStock.id
+                        }
+                    })
+            }
+        })
+    }
+
+
     Insert(user.StoreId, user.id,
         'Created Transfer Code ' + code + ' In Branch ' + user.Store.location, 0)
     res.send('data')
@@ -42,7 +84,7 @@ router.post('/product', async (req, res) => {
 router.post('/receive', async (req, res) => {
     const user = req.user.user
     const {code} = req.body
-
+    const productCode = new Set()
     const transfer = await TransferProduct.findOne({
         where: {code}
     })
@@ -54,33 +96,16 @@ router.post('/receive', async (req, res) => {
             message: `Please Input Proper Code For Your Branch`
         })
     }
-    await Store.update({requesting: 0}, {
-        where: {id: user.StoreId}
-    }).then(ignored => {
-        Insert(user.StoreId, user.id,
-            'Store Request Stock Fulfilled In Branch ' + user.Store.location, 0)
-    }).catch(ignored => {
 
-    })
-
-    await TransferProduct.update(
-        {status: 1}, {
-            where: {code}
-        })
-        .then(ignored => {
-            Insert(user.StoreId, user.id,
-                'Receive Transfer Products' + code + ' In Branch ' + user.Store.location, 0)
-        }).catch(ignored => {
-            return res.status(400).send({
-                title: `Error Receive Code`,
-                message: `Please Input Proper Code For Receiving`
-            })
-        })
 
     await TransferProduct.findAll({
-        where: {code}
+        where: {code},
+        include: [
+            {model: Product}
+        ]
     }).then(e => {
         for (let i = 0; i < e.length; i++) {
+            productCode.add(e[i].dataValues.Product.code)
             Product.update(
                 {
                     status: 'Available',
@@ -98,6 +123,73 @@ router.post('/receive', async (req, res) => {
     })
 
     res.send("Transfer Product Success")
+
+    await Store.update({requesting: 0}, {
+        where: {id: user.StoreId}
+    }).then(ignored => {
+        Insert(user.StoreId, user.id,
+            'Store Request Stock Fulfilled In Branch ' + user.Store.location, 0)
+    }).catch(ignored => {
+
+    })
+
+    await TransferProduct.update(
+        {status: 1}, {
+            where: {code}
+        })
+        .then(ignored => {
+            Insert(user.StoreId, user.id,
+                'Receive Transfer Products' + code + ' In Branch ' + user.Store.location, 0)
+        }).catch(ignored => {
+        return res.status(400).send({
+            title: `Error Receive Code`,
+            message: `Please Input Proper Code For Receiving`
+        })
+    })
+
+    for (let codeSet of productCode) {
+
+        const criticalStock = await CriticalStock.findOne({
+            where: {
+                StoreId: transfer.To,
+                productCode: codeSet
+            }
+        })
+
+        console.log(criticalStock)
+
+        await Product.count({
+            where: {
+                status: 'Available',
+                StoreId: transfer.To,
+                code: codeSet,
+            }
+        }).then(e => {
+            console.log("The status")
+            console.log(e)
+            console.log(criticalStock.critical_level)
+            if (e > criticalStock.critical_level) {
+                CriticalStock.update({
+                        status: 'Good'
+                    },
+                    {
+                        where: {
+                            id: criticalStock.id
+                        }
+                    })
+            } else if (e <= criticalStock.critical_level) {
+                CriticalStock.update({
+                        status: 'Warning'
+                    },
+                    {
+                        where: {
+                            id: criticalStock.id
+                        }
+                    })
+            }
+        })
+    }
+
 })
 
 router.get('/receiveList', async (req, res) => {
@@ -120,7 +212,7 @@ router.get('/receiveList', async (req, res) => {
         offset: parseInt(page) * parseInt(size),
         include: {all: true},
         where: data,
-        order: [ [ 'createdAt', 'DESC' ]],
+        order: [['createdAt', 'DESC']],
     }).then(e => {
         res.send(e)
     }).catch(data => {

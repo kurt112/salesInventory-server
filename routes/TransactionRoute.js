@@ -1,6 +1,6 @@
 const express = require('express')
 let router = express.Router()
-const {Transaction, Customer, Store, User, Product, Sales} = require('../models')
+const {Transaction, Customer, Store, User, Product, Sales, CriticalStock} = require('../models')
 const Insert = require('../utils/InsertAuditTrail')
 const {Op} = require("sequelize");
 router.post('/insert', async (req, res) => {
@@ -44,9 +44,47 @@ router.post('/insert', async (req, res) => {
             qty--
         }
     }
-
-
     res.send(transaction)
+
+    for (let i = 0; i < item.length; i++) {
+        const code = item[i].code
+
+        const criticalStock = await CriticalStock.findOne({
+            where: {
+                productCode: code,
+                StoreId:user.StoreId
+            }
+        })
+
+        await Product.count({
+            where: {
+                status: 'Available',
+                code,
+                StoreId: user.StoreId
+            }
+        }).then(e=> {
+            if (e === 0) {
+                CriticalStock.update({
+                        status: 'Empty'
+                    },
+                    {
+                        where: {
+                            id: criticalStock.id
+                        }
+                    })
+            } else if (e <= criticalStock.critical_level) {
+                CriticalStock.update({
+                        status: 'Warning'
+                    },
+                    {
+                        where: {
+                            id: criticalStock.id
+                        }
+                    })
+            }
+        })
+
+    }
 })
 
 router.get('/list', (req, res) => {

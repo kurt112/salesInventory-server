@@ -50,6 +50,14 @@ router.post('/insert', verify, async (req, res) => {
                             critical_level: 1,
                             status
                         })
+                    } else {
+                        const level = criticalStock.critical_level
+                        status = products.length === 0? 'Empty': products.length <=level? 'Warning': 'Good'
+                        CriticalStock.update({
+                            status
+                        }, {
+                            where: {id: criticalStock.id}
+                        })
                     }
                 })
             })
@@ -94,10 +102,6 @@ router.post('/update', verify, async (req, res) => {
         // status: 'Available',
         StoreID: user.StoreId,
         code: oldCode
-    }
-
-    if (user.role === 3) {
-        delete filterData.StoreID
     }
 
     try {
@@ -164,32 +168,27 @@ router.post('/delete', verify, async (req, res) => {
 
     const user = req.user.user
     let qty = req.body.qty
-    const {code, branch} = req.body
+    const {code} = req.body
 
     const data = {
         status: 'Available',
-        StoreID: branch,
+        StoreId: user.StoreId,
         code,
     }
-
-    if (branch === 0) {
-        delete data.StoreID
-    }
-
 
     const size = await Product.findAll({
         where: data
     })
 
     if (size.length === 0) {
-        res.status(400).send({
+        return res.status(400).send({
             title: 'Product Not Found',
             message: 'User Barcode to find product'
         })
     }
 
     if (qty > size.length) {
-        res.status(400).send({
+        return res.status(400).send({
             title: 'Quantity Error',
             message: 'Quantity not enough'
         })
@@ -197,7 +196,7 @@ router.post('/delete', verify, async (req, res) => {
         await Product.destroy(
             {
                 limit: qty,
-                where: {code: code}
+                where: data
             }
         ).then(e => {
             console.log(e)
@@ -205,6 +204,36 @@ router.post('/delete', verify, async (req, res) => {
             console.log(error)
         })
 
+        const criticalStock = await CriticalStock.findOne({
+            where: {
+                StoreId: user.StoreId,
+                productCode: code
+            }
+        })
+
+        Product.count({
+            where: data
+        }).then(e => {
+            if (e === 0) {
+                CriticalStock.update({
+                        status: 'Empty'
+                    },
+                    {
+                        where: {
+                            id: criticalStock.id
+                        }
+                    })
+            } else if (e <= criticalStock.critical_level) {
+                CriticalStock.update({
+                        status: 'Warning'
+                    },
+                    {
+                        where: {
+                            id: criticalStock.id
+                        }
+                    })
+            }
+        })
 
         Insert(user.StoreId, user.id,
             'Delete Product With The Code Of ' + code + ' Quantity Of ' + req.body.qty + ' In Branch ' + user.Store.location, 0)
@@ -212,6 +241,8 @@ router.post('/delete', verify, async (req, res) => {
 
         res.send("Delete Success")
     }
+
+
 })
 
 router.get("/getImage/:name", (req, res) => {
