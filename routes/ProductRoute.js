@@ -342,7 +342,7 @@ router.post('/find', verify, async (req, res) => {
     if (data.length === 0) {
         res.status(400).send({
             title: 'Product Not Found',
-            message: 'User Barcode to find product'
+            message: 'Use Barcode to find product'
         })
     } else {
         res.send(data)
