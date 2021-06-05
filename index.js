@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3001;
 app.use(cors(
     {
         methods: ['GET', 'POST', 'PATCH', 'DELETE'],
-        origin: 'http://localhost:3000',
+        origin: 'https://gracious-allen-b8c2da.netlify.app',
     }
 ))
 
