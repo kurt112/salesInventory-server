@@ -14,13 +14,10 @@
     "dialect": "mysql"
   },
   "production": {
-    "username": "root",
-    "password": "oHrN7gd8wbOBaz4K",
-    "database": "jarssalesinventory",
-    "host": "34.68.178.116",
-    "dialect": "mysql",
-    "dialectOptions": {
-      "ssl": true
-    }
+    "username": "mwx5rbi322cv61jt",
+    "password": "r49sb2io1t1mbwhx",
+    "database": "d26feaovcrcv6par",
+    "host": "qao3ibsa7hhgecbv.cbetxkdyhwsb.us-east-1.rds.amazonaws.com",
+    "dialect": "mysql"
   }
 }
